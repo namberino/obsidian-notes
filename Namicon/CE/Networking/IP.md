@@ -65,10 +65,3 @@ A 64 network bit and 64 host bit IP (using slash notation):
 ```
 2001:0db8:6ffa:8939:163b:4cab:98bf:070a/64
 ```
-
-## Special addresses and subnets
-- ::1 - localhost, this computer, IPv6 version of 127.0.0.1
-- 2001:db8::/32 - for use in documentation
-- fe80::/10 - link local address
-
-## DNS

@@ -2,13 +2,13 @@
 - An asynchronous communication protocol
 - There are at least 2 connections between the 2 communicating devices: transmission line (*TX*) and reception line (*RX*)
 - The TX of device 1 will be connected to the RX of device 2 and the TX of device 2 will be connected to the RX of device 1
-![[uart-connections.png]]
+![](./Assets/uart-connections.png)
 - Data is sent **byte-by-byte**
 
 # Data packet
 - The sequence of bits that indicates the starting point and ending point of the communication to the receiver
 - For UART, the start bit is 0 and end bit is 1. The start and end bit last for 1 clock pulse
-![[uart-data-frame.png]]
+![](./Assets/uart-data-frame.png)
 - The parity bit is optional. If the parity bit is used then the data frame will be 11 bits
 - So UART will have 1 start bit, 5 to 9 data bits, 0 or 1 parity bit and 1 stop bit (2 stop bit for older systems) in a single data packet
 
@@ -23,7 +23,7 @@
 
 - The voltage difference between the 1s and 0s are so large that data corruption (signals get suppressed) won't destroy the information and the receiver will still be able to read the information
 - These high voltage levels are too much for embedded systems. So they are converted to 0 and 5V by a *level shifter* IC. 
-![[level-shifter-ic.png]]
+![](./Assets/level-shifter-ic.png)
 
 # Baud rate
 - To get good handshaking in asynchronous comm protocol, baud rate is important. 
@@ -34,13 +34,13 @@
 - The GPIO for UART will initially be high, when it wants to talk, it will go low for 1 clock pulse (1s) to notify other device that it is about to send data. 
 - The LSB (least significant bit) will be sent first.
 - At the end, the GPIO will go high to stop communication
-![[uart-bit-banging.png]]
+![](./Assets/uart-bit-banging.png)
 
 # UART peripherals
 - The transmit register and the receive register are connected to their on shift register on a device
 - Both shift registers will be connected with a clock generator
 - Transmit register sends the full data stream to shift register (parallel in), then the data will be sent to the other device's shift register, that will be sent up to the receive register (serial out)
-![[uart-peripheral-registers.png]]
+![](./Assets/uart-peripheral-registers.png)
 
 # Configuration for UART
 1. Clocks in UART devices need to be configured with the same baud rate

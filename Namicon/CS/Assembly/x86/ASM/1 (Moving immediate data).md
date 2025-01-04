@@ -7,7 +7,7 @@
 - In AT&T syntax, the # symbol is used for comments
 
 - Example program (Moves immediate data to a register and immediate data to memory):
-![[moving-data-asm.jpg]]
+![](../../Assets/moving-data-asm.jpg)
 - Compilation:
 ```bash
 as –32 -o moving_immediate_data.o moving_immediate_data.s
@@ -16,7 +16,7 @@ ld -m elf_i386 -o moving_immediate_data moving_immediate_data.o
 
 
 - Intel version: 
-![[moving-data-asm-intel.jpg]]
+![](../../Assets/moving-data-asm-intel.jpg)
 - Compilation:
 ```bash
 nasm -f elf32 moving_immediate_data.asm
@@ -34,7 +34,7 @@ ld -m elf_i386 -o moving_immediate_data moving_immediate_data.o
 	- At the bottom of memory in any program execution is the kernel space which is made up of the dispatcher section and the vector table
 	- At the top of memory in any program execution is the user space which is made up of the stack, the heap and finally our code
 
-![[linux-space.jpg]]
+![](../../Assets/linux-space.jpg)
 
 - When the values are loaded and **int 0x80** is called, the next instruction's address in the user space (ASM Code section which is our code) is placed into the return address area in the stack
 - This is critical so that when **int 0x80** does its work, it can properly know what instruction is to be carried out next to ensure proper and sequential program execution
@@ -53,31 +53,31 @@ ld -m elf_i386 -o moving_immediate_data moving_immediate_data.o
 
 # Debugging
 - Binary of the moving data program in GDB:
-![[move-data-gdb.jpg]]
+![](../../Assets/move-data-gdb.jpg)
 
 - We coded a **nop** which means no operation or 0x90 (from an opcode perspective) for proper debugging purposes which the breakpoint properly hit. This is good practice when creating assembly programs
 
-![[move-data-gdb-2.jpg]]
+![](../../Assets/move-data-gdb-2.jpg)
 - **si**: step into
 - At `_start+0`, hex value 0x64 is moving into eax. This is moving the number 100 into eax (moving immediate data)
 
-![[move-data-gdb-3.jpg]]
+![](../../Assets/move-data-gdb-3.jpg)
 - **i r**: Give information on the state of the CPU registers (eax now has the value 100)
 
-![[move-data-gdb-4.jpg]]
+![](../../Assets/move-data-gdb-4.jpg)
 - This moves the value 0x50 into the buffer label (/x shows value in hex)
 
-![[move-data-gdb-5.jpg]]
+![](../../Assets/move-data-gdb-5.jpg)
 - At `_start+5`, 0x50 is loaded into the address of the buffer (**0x8049090**)
 
 # Hacking
 - Moving data program in GDB:
-![[move-data-gdb.jpg]]
+![](../../Assets/move-data-gdb.jpg)
 
-![[move-data-gdb-2.jpg]]
+![](../../Assets/move-data-gdb-2.jpg)
 
-![[move-data-gdb-3.jpg]]
+![](../../Assets/move-data-gdb-3.jpg)
 
 - Let's try setting eax to 0x66:
-![[move-data-gdb-6.jpg]]
+![](../../Assets/move-data-gdb-6.jpg)
 

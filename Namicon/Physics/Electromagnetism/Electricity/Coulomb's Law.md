@@ -107,4 +107,4 @@ $$
 \vec{E} = \int{\frac{k \sigma dx}{r^2} \hat{r}}
 $$
 
-> This method of calculating the electric field is pretty difficult, but luckily there's an easier method of doing that. But we need to know about [[flux]].
+> This method of calculating the electric field is pretty difficult, but luckily there's an easier method of doing that. But we need to know about [[flux.

@@ -17,13 +17,13 @@
 
 - I2C mode must be configured to match the required I2C bus speed for a particular slave
 - Example:
-![[i2c-bus-speed-slaves.png]]
+![](./Assets/i2c-bus-speed-slaves.png)
 - Here, the mode will be standard as all slaves can support 100 kbps
 
 - Each master and slave devices has an open drain/open collector configuration pin. These are connected to both SDA and SCL
 - SDA and SCL are both connected to VDD
 
-![[i2c-open-drain-collector-bus.png]]
+![](./Assets/i2c-open-drain-collector-bus.png)
 
 - If the buses are high, they are on idle
 - When the devices need to talk, the I2C buses will be pulled to ground using the MOSFETs in the master

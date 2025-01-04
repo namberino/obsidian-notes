@@ -90,7 +90,7 @@ void app_main(void)
  }
 ```
 - The 2 tasks will run simultaneously
-![[esp-idf-rtos-task-creation.png]]
+![](./Assets/esp-idf-rtos-task-creation.png)
 
 FreeRTOS delete task example:
 - Task 2 will print a new message every second:
@@ -121,7 +121,7 @@ void Demo_Task(void *arg)
     }
 }
 ```
-![[esp-idf-rtos-task-delete.png]]
+![](./Assets/esp-idf-rtos-task-delete.png)
 
 FreeRTOS suspend and resume task example:
 ```c
@@ -167,7 +167,7 @@ void Demo_Task(void *arg)
     }
 }
 ```
-![[esp-idf-rtos-resume-suspend.png]]
+![](./Assets/esp-idf-rtos-resume-suspend.png)
 
 Get tick count:
 - To calculate the time of the application we use `xTaskGetTickCount()`

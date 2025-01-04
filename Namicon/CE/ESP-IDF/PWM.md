@@ -8,7 +8,7 @@ Duty cycle:
 - The duty cycle is the percentage of time for which the PWM signal stays HIGH or is "on time."
 - Example: A signal that is always OFF has a 0% duty cycle, whereas a signal that is constantly ON has a 100% duty cycle
 - **Duty Cycle = ON Time of Signal / Time Period of Signal**
-![[esp-idf-pwm-duty-cycle.png]]
+![](./Assets/esp-idf-pwm-duty-cycle.png)
 
 Frequency:
 - The frequency of a PWM signal is the number of cycles per second

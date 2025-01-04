@@ -2,7 +2,7 @@
 - Measured voltage is given value 0 - 4095
 - Close values will be matched up to similar voltages
 
-![[esp-idf-adc-reading-graph.png]]
+![](./Assets/esp-idf-adc-reading-graph.png)
 
 ESP32 has two 12-bit ADCs (ADC 1 & ADC 2) and supports a maximum of 18 analog channels.
 
@@ -38,7 +38,7 @@ The ESP32 board has 8 channels for ADC1 but the DEVKIT V1 only supports 6 of the
 	- ADC2_CH8: GPIO 25
 	- ADC2_CH9: GPIO 26
 
-![[esp-idf-adc-pinout.png]]
+![](./Assets/esp-idf-adc-pinout.png)
 
 ESP-IDF ADC libraries:
 ```c
