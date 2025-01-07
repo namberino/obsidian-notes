@@ -75,3 +75,24 @@ Because the linear regression's cost function will always have a single local mi
 This means the gradient descent will look at the entire batch of training examples at each update.
 
 There are other versions of gradient descent that look at a small subset of the training examples instead of the entire batch.
+
+# Multiple linear regression
+
+Variables:
+- $x_j$: The $j^{th}$ feature
+- $n$: Number of features
+- $\vec{x}^{(i)}$: Features of the $i^{th}$  training example
+- $x_j^{(i)}$: Value of feature $j$ in the $i^{th}$ training example
+
+Model:
+
+$$
+f_{\vec{w}, b}(x) = w_1 x_1 + w_2 x_2 \; + \; ... \; + \; w_n x_n + b
+$$
+
+We can also rewrite this in vector form using dot product:
+
+$$
+f_{\vec{w}, b}(x) = \vec{w} \cdot \vec{x} + b
+$$
+
