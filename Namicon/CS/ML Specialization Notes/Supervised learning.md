@@ -87,12 +87,52 @@ Variables:
 Model:
 
 $$
-f_{\vec{w}, b}(x) = w_1 x_1 + w_2 x_2 \; + \; ... \; + \; w_n x_n + b
+f_{\vec{w}, b}(\vec{x}) = w_1 x_1 + w_2 x_2 \; + \; ... \; + \; w_n x_n + b
 $$
 
 We can also rewrite this in vector form using dot product:
 
 $$
-f_{\vec{w}, b}(x) = \vec{w} \cdot \vec{x} + b
+f_{\vec{w}, b}(\vec{x}) = \vec{w} \cdot \vec{x} + b
 $$
 
+# Vectorization
+
+```python
+import numpy as np
+
+w = np.array([1.0, 2.5, -3.3])
+x = np.array([10, 20, 30])
+b = 4
+
+f = np.dot(w, x) + b
+```
+
+The `dot` function in NumPy computes the dot product with parallelism, resulting in better performance.
+
+# Gradient descent for multiple linear regression
+
+Parameters: $\vec{w}$, $b$
+Model: $f_{\vec{w}, b}(\vec{x}) = \vec{w} \cdot \vec{x} + b$
+Cost function: $J(\vec{w}, b)$
+Gradient descent:
+
+$$
+\begin{aligned}
+w_j = w_j - \alpha \frac{\partial}{\partial w_j}J(\vec{w}, b)
+\\
+b = b - \alpha \frac{\partial}{\partial b}J(\vec{w}, b)
+\end{aligned}
+$$
+
+The derivative will be like this (for $j = n$):
+
+$$
+\begin{aligned}
+w_n = w_n - \alpha \frac{1}{m} \sum_{i=1}^{m} (f_{\vec{w},b}(\vec{x}^{(i)}) - y^{(i)}) x_n^{(i)}
+\\
+b = b - \alpha \frac{1}{m} \sum_{i=1}^{m} (f_{\vec{w},b}(\vec{x}^{(i)}) - y^{(i)})
+\end{aligned}
+$$
+
+> An alternative to gradient descent for finding $w$ and $b$ for linear regression is called the normal equation. This works *only* for linear regression and it solves for $w$ and $b$ without iterations. It's also kinda slow so don't try implement this, gradient descent is more recommended.
