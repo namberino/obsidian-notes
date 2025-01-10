@@ -43,3 +43,16 @@ With linearly dependent transformation, the transformation squishes all of 2D sp
 $$
 \begin{bmatrix} 2 & -2 \\ 1 & -1 \end{bmatrix}
 $$
+
+# Transformation ranks
+
+Ranks (The number of dimensions in an output transformation):
+- Rank 1: The output of the transformation is a line (1D)
+- Rank 2: The output of the transformation is a 2D plane
+- Rank 3: The output of the transformation is a 3D space
+
+The set of all possible outputs for a matrix is called *column space* of the matrix. The column space is the span of all the columns in the transformation matrix. So the rank is the number of dimensions in the column space. When the rank is equal to the number of columns in the matrix, it's "full rank".
+
+> Note: The zero vector will always be in the column space since all linear transformation must keep the origin fixed.
+
+The set of vectors that land on the origin after the transformation is called the *null space* or the *kernel*.
