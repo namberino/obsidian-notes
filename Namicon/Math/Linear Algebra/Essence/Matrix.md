@@ -58,3 +58,16 @@ For systems of equations, even when the determinant of $A$ is 0, there could sti
 
 # Non-square matrix
 
+Example: 3x2 matrix. A 3x2 matrix has the geometric interpretation of mapping 2 dimensions to 3 dimensions since the 2 columns indicate that the input space has 2 basis vectors and the 3 rows indicate that the landing spots for each basis vectors after the transformation (3 coordinates = 3 dimensions). 
+
+$$
+\begin{bmatrix} 3 & 1 \\ 4 & 1 \\ 5 & 9 \end{bmatrix}
+$$
+
+You can go from 2D to 3D and vice versa (though 3D to 2D is pretty weird if you think about it). It's also possible to go from 2D to 1D since 1D is just a number line. A transformation like this would just take in 2D vectors and spit out numbers.
+
+A 1D transformation can be encoded with a 1x2 vector, with the first number being the number $\hat{i}$ landed on and the second number being the number $\hat{j}$ landed on (This has close ties to the dot product).
+
+$$
+\begin{bmatrix} 1 & 2 \end{bmatrix}
+$$
