@@ -1,0 +1,1 @@
+This writes a random value into the `r12` register. So using `i r`, we can get the information about the registers and get the correct value.

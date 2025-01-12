@@ -1,0 +1,1 @@
+We just run this an get the flag
