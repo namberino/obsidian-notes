@@ -1,0 +1,5 @@
+- Calling conventions: https://en.wikipedia.org/wiki/X86_calling_conventions#x86-64_calling_conventions
+- Syscall table: https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
+- man7.org: https://man7.org
+- Linux kernel: https://github.com/torvalds/linux
+- x86 registers: https://www.tortall.net/projects/yasm/manual/html/arch-x86-registers.html
