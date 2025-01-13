@@ -173,7 +173,7 @@ Then it's easier to change to an eigenbasis, compute the 100th power, then chang
 
 > Note: This is a trick for 2x2 matrices
 
-3 facts:
+3 points:
 1) $\frac{1}{2} \text{trace} \biggr(\begin{bmatrix} a & b \\ c & d \end{bmatrix} \biggl) = \frac{a + d}{2} = \frac{\lambda_1 + \lambda_2}{2} \rightarrow m$
 2) $\det \biggr(\begin{bmatrix} a & b \\ c & d \end{bmatrix} \biggl) = ad - bc = \lambda_1\lambda_2 \rightarrow p$
 3) $p = m^2 - d^2 = (m+d)(m-d) \rightarrow d^2 = m^2 - p \rightarrow \lambda_1, \lambda_2 = m \pm \sqrt{m^2 - p}$
