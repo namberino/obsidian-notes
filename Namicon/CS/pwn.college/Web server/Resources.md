@@ -3,3 +3,4 @@
 - man7.org: https://man7.org
 - Linux kernel: https://github.com/torvalds/linux
 - x86 registers: https://www.tortall.net/projects/yasm/manual/html/arch-x86-registers.html
+- GNU assembler manual: http://microelectronics.esa.int/erc32/doc/as.pdf

@@ -56,3 +56,35 @@ The set of all possible outputs for a matrix is called *column space* of the mat
 > Note: The zero vector will always be in the column space since all linear transformation must keep the origin fixed.
 
 The set of vectors that land on the origin after the transformation is called the *null space* or the *kernel*.
+
+# Linearity properties
+
+$$
+\begin{aligned}
+L(\vec{v} + \vec{w}) = L(\vec{v}) + L(\vec{w})
+\\
+L(c\vec{v}) = cL(\vec{v})
+\end{aligned}
+$$
+
+Imagine a line of evenly spaced dots on the 2D space and apply a transformation, a linear transformation will keep those dots evenly spaced once they land on the output space (which is the number line). If the line of dots are not evenly spaced then they're not linear.
+
+The basis vector will land on a number on the number line after the transformation. Below is an example transformation matrix:
+
+$$
+\text{matrix} = \begin{bmatrix} 2 & 1 \end{bmatrix}
+$$
+
+Example:
+
+$$
+\vec{v} = \begin{bmatrix} 4 \\ 3 \end{bmatrix}
+$$
+
+How will this vector transform with the transformation matrix $\begin{bmatrix} 1 & -2 \end{bmatrix}$? Well it will land on the place where $\hat{i}$ lands (which is 1) times the 1st element of the vector + the place where $\hat{j}$ lands (which is -2) times the 2nd element of the vector
+
+$$
+L(\vec{v}) = 1 \times 4 + -2 \times 3 = -2
+$$
+
+This is basically matrix - vector multiplication.

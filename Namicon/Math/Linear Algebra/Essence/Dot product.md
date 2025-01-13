@@ -17,4 +17,4 @@ Properties of dot product:
 - When they are perpendicular, the dot product will be 0 (Because the projection of 1 onto the other will land on the origin).
 - When they generally point in the opposite direction, the dot product will be negative.
 
-The dot product multiplication and vector projection is connected because of *duality*. 
+The dot product multiplication and vector projection is connected because of *duality*. The multiplication seems to be similar to the [matrix - vector multiplication](./Transformation.md), since the matrix seems like tilted vectors and vice versa.
