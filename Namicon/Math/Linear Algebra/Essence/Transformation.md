@@ -6,7 +6,11 @@ Linear transformation properties:
 - All lines must remain lines (No curves)
 - The origin remains fixed in place
 
-Linear transformation keeps the grid lines parallel and evenly spaced.
+Linear transformation keeps the grid lines parallel and evenly spaced. It's linear because it preserves vector addition and scalar multiplication.
+
+Formal definition of linearity:
+- Additivity: $L(\vec{v} + \vec{w}) = L(\vec{v}) + L(\vec{w})$
+- Scaling: $L(c\vec{v}) = cL(\vec{v})$
 
 This transformation is described with the transformation of $\hat{i}$ and $\hat{j}$:
 
