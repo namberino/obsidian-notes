@@ -356,7 +356,7 @@ $$
 \\
 &g(z) = \frac{1}{1 + e^{-z}}
 \\
-&f_{\vec{w}, b}(\vec{x}) = g(\vec{w} \cdot \vec{x} + b) = \frac{1}{1 + e^{\vec{w} \cdot \vec{x} + b}}
+&f_{\vec{w}, b}(\vec{x}) = g(\vec{w} \cdot \vec{x} + b) = \frac{1}{1 + e^{-(\vec{w} \cdot \vec{x} + b)}}
 \end{aligned}
 $$
 
@@ -377,4 +377,187 @@ f_{\vec{w}, b}(\vec{x}) = P(y=1 | \vec{x}; \vec{w}, b)
 $$
 
 # Decision boundary
+
+To predict the whether the predicted probability should output a 1 or a 0, we can set a threshold, above which you predict $y=1$ and below which you predict $y=0$. 
+
+A common threshold choice is $0.5$. This is because at 0.5, because of the way the sigmoid function works, the only way an output value could be greater than or equal to 0.5 is by being larger than or equal to 0 (positive). Any value less than 0 would result in a value that falls below the 0.5 threshold.
+
+$$
+\begin{aligned}
+f_{\vec{w}, b}(\vec{x}) \ge 0.5 \text{ only if } z \ge 0
+\\
+f_{\vec{w}, b}(\vec{x}) \lt 0.5 \text{ only if } z \lt 0
+\end{aligned}
+$$
+
+Example: Classification problem with 2 features ($x_1$ and $x_2$)
+
+![](./Assets/logistic-regression-threshold-example.png)
+
+With 2 features, we can build a logistic regression model like this:
+
+$$
+f_{\vec{w}, b}(\vec{x}) = g(\vec{w} \cdot \vec{x} + b) = g(w_1x_1 + w_2x_2 + b)
+$$
+
+For now, let's put in some placeholder weights and biases:
+
+$$
+w_1 = 1 \;\;\;\; w_2 = 1 \;\;\;\; b = -3
+$$
+
+First, we need to find the decision boundary ($z = 0$). This $z$ value will always output $0.5$ since the 0 input for the sigmoid function is mapped to the output 0.5.
+
+So let's calculate the decision boundary:
+
+$$
+\begin{aligned}
+&w_1x_1 + w_2x_2 + b = 0 
+\\
+&x_1 + x_2 - 3 = 0
+\\
+&x_1 + x_2 = 3
+\end{aligned}
+$$
+
+The decision boundary would be this line:
+
+![](./Assets/logistic-regression-decision-boundary-example.png)
+
+This is the decision boundary when the parameters are setup with those particular values. Different parameter choice would change this boundary. 
+
+# Non-linear decision boundary
+
+Example: 2 features, non-linear dataset
+
+![](./Assets/non-linear-decision-boundary-example-graph.png)
+
+For non-linear datasets, we can use polynomials:
+
+$$
+z = w_1x_1^2 + w_2x_2^2 + b
+$$
+
+This now describes the $z$ value of the logistic regression model for this dataset. For now let's choose $w_1 = w_2 = 1$ and $b = -1$. So we get this decision boundary:
+
+$$
+\begin{aligned}
+&z = w_1x_1^2 + w_2x_2^2 + b = 0
+\\
+&x_1^2 + x_2^2 - 1 = 0
+\\
+&x_1^2 + x_2^2 = 1
+\end{aligned}
+$$
+
+So the decision boundary for this particular parameters setup could be drawn like this:
+
+![](./Assets/non-linear-decision-boundary-example-decision-line.png)
+
+When $x_1^2 + x_2^2 \ge 1$, the predicted value will be the x's outside of the circle. When $x_1^2 + x_2^2 \lt 1$, the predicted value will be the x's outside of the circle.
+
+By modifying the equation $x_n$, we can modify how the decision boundary will be like. We can create decision boundary of any shape, we just need to create the correct polynomials to represent those shapes. Without the use of polynomials, the decision boundary will always be linear.
+
+# Cost function for logistic regression
+
+The squared error cost function that we use for linear regression is not really ideal for the logistic regression algorithm. 
+
+Example dataset:
+
+| Tumor size (cm) | ... | Patient's age | Malignant |
+| --------------- | --- | ------------- | --------- |
+| 10              |     | 52            | 1         |
+| 2               |     | 73            | 0         |
+| 5               |     | 55            | 0         |
+| 12              |     | 49            | 1         |
+| ...             |     | ...           | ...       |
+
+This dataset has $m$ training samples with $n$ features. Let's call the features $X_n$. The target label $Y$ takes on 1 of 2 values: 1 or 0. 
+
+Our logistic regression model is defined by this equation:
+
+$$
+f_{\vec{w}, b}(\vec{x}) = \frac{1}{1 + e^{-(\vec{w} \cdot \vec{x} + b)}}
+$$
+
+How do we choose $\vec{w}$ and $b$ that would best fit the model to this particular dataset? The mean squared error cost function work pretty well for the linear regression algorithm since it is a convex function. But if we try to apply the same mean squared error cost function to the logistic regression algorithm, it becomes a non-convex function, it creates a lot of local minima, which gradient descent can get stuck in. 
+
+Here's the loss function for logistic regression:
+
+$$
+\begin{aligned}
+&L(f_{\vec{w}, b}(\vec{x}^{(i)}), y^{(i)}) = -\log(f_{\vec{w}, b}(\vec{x}^{(i)})) \text{ if } y^{(i)} = 1
+\\
+&L(f_{\vec{w}, b}(\vec{x}^{(i)}), y^{(i)}) = -\log(1 - f_{\vec{w}, b}(\vec{x}^{(i)})) \text{ if } y^{(i)} = 0
+\end{aligned}
+$$
+
+Because the function would only output value ranging from 0 to 1, we can use logarithms to determine the error between the target value and output value. Negative logarithm has a graph like this:
+
+![](./Assets/negative-logarithm-graph.png)
+
+Since our function $f$ only outputs values ranging from 0 to 1, we'd only care about the part highlighted by the pink square. Negative logarithms indicate that if the input value approaches 1, the output would be 0, if it approaches 0, then the output would get really high (approaches infinity). So if we're trying to predict a data point with the label $y = 1$, then we'd want our function to output something close to 1. If our function outputs something close to 1, the negative logarithm will give an cost close to 0, which is what we want. For the label $y=0$, it's basically the opposite of the label $y=1$. We're basically just mirroring the negative logarithm line. This loss function would be a convex loss function for the logistic regression model.
+
+So we have this cost function for our logistic regression model:
+
+$$
+J(\vec{w}, b) = \frac{1}{m} \sum^m_{i=1} L(f_{\vec{w}, b}(\vec{x}^{(i)})
+$$
+
+We can actually simplify the loss function to this:
+
+$$
+L(f_{\vec{w}, b}(\vec{x}^{(i)}), y^{(i)}) = - y^{(i)} \log(f_{\vec{w}, b}(\vec{x}^{(i)})) - (1 - y^{(i)}) \log(1 - f_{\vec{w}, b}(\vec{x}^{(i)}))
+$$
+
+$y^{(i)}$ can only take on the value of 1 or 0. This is simplification works because when $y^{(i)}$ is in 1 of its 2 state, 1 of the term would get removed because it would get multiplied by 0. So if $y^{(i)} = 1$ then the second term would be 0. If $y^{(i)} = 0$ then the first term would be 0. So we can rewrite the cost function of logistic regression to this:
+
+$$
+\begin{aligned}
+J(\vec{w}, b) &= \frac{1}{m} \sum^m_{i=1} - y^{(i)} \log(f_{\vec{w}, b}(\vec{x}^{(i)})) - (1 - y^{(i)}) \log(1 - f_{\vec{w}, b}(\vec{x}^{(i)}))
+
+\\ &= -\frac{1}{m} \sum^m_{i=1} y^{(i)} \log(f_{\vec{w}, b}(\vec{x}^{(i)})) + (1 - y^{(i)}) \log(1 - f_{\vec{w}, b}(\vec{x}^{(i)}))
+\end{aligned}
+$$
+
+# Gradient descent for logistic regression
+
+We can apply the usual gradient descent algorithm to update the weights and biases for our logistic regression model.
+
+$$
+\begin{aligned}
+w_j = w_j - \alpha \frac{\partial}{\partial w_j}J(\vec{w}, b)
+\\
+b = b - \alpha \frac{\partial}{\partial b}J(\vec{w}, b)
+\end{aligned}
+$$
+
+The partial derivative terms would evaluate to this (With $x_j$ being the current $j^{th}$ feature of sample $x$):
+
+$$
+\begin{aligned}
+&\frac{\partial}{\partial w_j}J(\vec{w}, b) = \frac{1}{m} \sum^m_{i=1} (f_{\vec{w}, b}(\vec{x}^{(i)}) - y^{(i)}) x_j^{(i)}
+\\
+&\frac{\partial}{\partial b}J(\vec{w}, b) = \frac{1}{m} \sum^m_{i=1} (f_{\vec{w}, b}(\vec{x}^{(i)}) - y^{(i)})
+\end{aligned}
+$$
+
+# Overfitting and underfitting
+
+Bias in this context meaning the model not being able to fit the training dataset well. Variance in this context meaning the model fits the training dataset really well, but does poorly with new data.
+
+Underfitting is when the model fit too poorly with the training dataset. We say underfitting model as having a high bias.
+
+Overfitting is when the model fit too well with the training dataset but fits poorly with the testing dataset. We want the model to generalize well, meaning we want the model can make good predictions even on new data samples that it has never seen before. An overfitting model has high variance. 
+
+We want our model to fit the data just at the right amount for it to perform well and generalize well.
+
+![](./Assets/overfitting-underfitting-example.png)
+
+Solution to overfitting:
+- Collect more training data.
+- Select features to include/exclude. Too much features but not enough training data could lead to overfitting.
+- Regularization. This is a way to reduce the impact of some of the features without eliminating it outright. In regularization, we just change the weights $w_j$ and not the bias $b$. 
+
+# Regularization
 
