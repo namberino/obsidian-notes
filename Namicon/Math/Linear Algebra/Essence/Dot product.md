@@ -18,3 +18,5 @@ Properties of dot product:
 - When they generally point in the opposite direction, the dot product will be negative.
 
 The dot product multiplication and vector projection is connected because of *duality*. The multiplication seems to be similar to the [matrix - vector multiplication](./Transformation.md), since the matrix seems like tilted vectors and vice versa.
+
+In a sense, the dot product is vector - vector multiplication that also takes into account the difference in direction of the vectors. It represents the product of the magnitude of 1 vector and the magnitude of the other vector along the direction of the first vector.
