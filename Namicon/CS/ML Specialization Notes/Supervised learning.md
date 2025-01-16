@@ -561,3 +561,80 @@ Solution to overfitting:
 
 # Regularization
 
+Say we have a polynomial model that fits to a training dataset really well. This would be overfitting and a way to prevent this is to regularize the data. We want to put less significance on the higher degree variables in the polynomial.
+
+One way we could do this is add the high degree terms to the cost function, effectively penalizing the model for choosing large weights for those high degree terms. The below example show a regularized cost function, regularizing the weights $w_3$ and $w_4$. These weights each have a degree of 3 and 4 respectively in this example polynomial linear regression model.
+
+$$
+\begin{aligned}
+&w_1x + w_2x^2 + w_3x^3 + w_4x^4 + b
+\\
+&\min_{\vec{w},b} = \frac{1}{2m} \sum_{i=1}^{m} (f_{\vec{w}, b}(\vec{x}^{(i)}) - y^{(i)})^2 + 1000 w_3^2 + 1000 w_4^2
+\end{aligned}
+$$
+
+Minimizing this cost function would give us a $w_3$ and $w_4$ close to 0, putting much less significance on the high degree terms.
+
+With regularization, the idea is that if there are smaller values for the parameters, then it's a bit like having a simpler model. Maybe 1 with fewer features, therefore is less prone to overfitting.
+
+Regularization is usually implemented for all the weights $w_j$. 
+
+$$
+J(\vec{w}, b) = \frac{1}{2m} \sum_{i=1}^{m} (f_{\vec{w}, b}(\vec{x}^{(i)}) - y^{(i)})^2 + \frac{\lambda}{2m} \sum^n_{j=1} w_j^2
+$$
+
+Where $\lambda$ is the regularization parameter. It's kinda similar to the learning rate. We also scale $\lambda$ the same way as the cost function because it makes it easier to choose a $\lambda$ value even if the dataset grows, the same $\lambda$ value would still work on that larger dataset.
+
+Penalizing $b$ is not necessary, though some people do do it as it makes little difference on the outcome.
+
+Different $\lambda$ values:
+-  $\lambda = 0$: You're not using regularization. The model will overfit.
+- $\lambda$ is a large number (eg. $10^{10}$): You're placing heavy weights on the regularization term. So the only way to counteract this large $\lambda$ value is to set all the weights to near 0. Making the model curve pretty flat since $b$ will have the most significance here. The model will underfit.
+
+So we need to choose a value that's not too large and not too small.
+
+# Regularized linear regression
+
+The cost function for regularized linear regression is described like this:
+
+$$
+J(\vec{w}, b) = \frac{1}{2m} \sum_{i=1}^{m} (f_{\vec{w}, b}(\vec{x}^{(i)}) - y^{(i)})^2 + \frac{\lambda}{2m} \sum^n_{j=1} w_j^2
+$$
+
+Now we need to apply gradient descent to this new cost function.
+
+$$
+\begin{aligned}
+&w_j = w_j - \alpha \frac{\partial}{\partial w_j}J(\vec{w}, b) = w_j - \alpha \biggr[ \frac{1}{m} \sum_{i=1}^{m} [(f_{\vec{w},b}(\vec{x}^{(i)}) - y^{(i)}) x_j^{(i)}] + \frac{\lambda}{m} w_j \biggl]
+\\
+&b = b - \alpha \frac{1}{m} \sum_{i=1}^{m} (f_{\vec{w},b}(\vec{x}^{(i)}) - y^{(i)})
+\end{aligned}
+$$
+
+The $b$ term remains the same as we're not applying regularization to it. The $w_j$ term gets the derivative of the regularization added to it, with $\alpha$ multiplying with the entire regularized derivative term.
+
+The regularization term has the effect of after being multiplied with $\alpha$, it would produce a number close to 1. This has the effect of reducing $w_j$ by a small a mount, effectively shrinking it for each iteration.
+
+# Regularized logistic regression
+
+The cost function for logistic regression is described like this:
+
+$$
+J(\vec{w}, b) = -\frac{1}{m} \sum^m_{i=1} y^{(i)} \log(f_{\vec{w}, b}(\vec{x}^{(i)})) + (1 - y^{(i)}) \log(1 - f_{\vec{w}, b}(\vec{x}^{(i)}))
+$$
+
+We can add the regularization term to this cost function to regularize it:
+
+$$
+J(\vec{w}, b) = -\frac{1}{m} \sum^m_{i=1} y^{(i)} \log(f_{\vec{w}, b}(\vec{x}^{(i)})) + (1 - y^{(i)}) \log(1 - f_{\vec{w}, b}(\vec{x}^{(i)})) + \frac{\lambda}{2m} \sum_{i=1}^n w_j^2
+$$
+
+And we can apply the regularization term to logistic regression's gradient descent:
+
+$$
+\begin{aligned}
+&w_j = w_j - \alpha \frac{\partial}{\partial w_j}J(\vec{w}, b) = w_j - \alpha \biggr[ \frac{1}{m} \sum_{i=1}^{m} [(f_{\vec{w},b}(\vec{x}^{(i)}) - y^{(i)}) x_j^{(i)}] + \frac{\lambda}{m} w_j \biggl]
+\\
+&b = b - \alpha \frac{1}{m} \sum_{i=1}^{m} (f_{\vec{w},b}(\vec{x}^{(i)}) - y^{(i)})
+\end{aligned}
+$$
