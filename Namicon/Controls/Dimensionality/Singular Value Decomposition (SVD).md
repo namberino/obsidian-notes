@@ -170,7 +170,7 @@ $$
 
 # Dominant correlations
 
-SVD is closely related to an eigenvalue problem involving the correlation matrices $XX^*$ and $X^*X$.
+SVD is closely related to an eigenvalue problem involving the correlation matrices $XX^*$ and $X^*X$. Essentially, we can think of $U$ and $V$ as eigenvectors of a correlation matrix given by $XX^*$ or $X^*X$.
 
 $$
 \begin{aligned}
@@ -182,7 +182,23 @@ $$
 
 ![](./Assets/svd-correlation-matrices-example.png)
 
-Both correlation matrices are symmetric.
+Both correlation matrices are symmetric. The correlation matrix among the columns of $X$. For $XX^*$, this is an $m\times m$ matrix. Each columns in the $m\times m$ correlation matrix is the dot product between each columns and rows in the $X^* X$ matrix.
+
+$$
+\begin{aligned}
+X^* X &= \begin{bmatrix} -x_1^T- \\ -x_2^T- \\ ... \end{bmatrix} \begin{bmatrix} | & | \\ x_1 & x_2 & ...  \\ | & | \end{bmatrix}
+\\
+&= \begin{bmatrix} x_1^T x_1 & x_1^T x_2 & ... & x_1^T x_m \\ x_2^Tx_1 & x_2^Tx_2 & ... & x_2^T x_m \\ \vdots & \vdots & \ddots & \vdots \\ x_m^Tx_1 & x_m^Tx_2 & ... & x_m^T x_m\end{bmatrix}
+\end{aligned}
+$$
+
+We can also represent this matrix as an inner product equation:
+
+$$
+x_i^T x_j = \langle x_i, x_j \rangle
+$$
+
+An interesting thing about the correlation matrix is that if there's a large value in the matrix, then that means $x_i$ and $x_j$ has a strong correlation to each other, meaning they have similar structure to each other. A small value would indicate that they are orthogonal to each other, meaning they have very different structure.
 
 $U$ and $V$ are unitary. So $U$, $\Sigma$, and $V$ are solutions to the following eigenvalue problems:
 
