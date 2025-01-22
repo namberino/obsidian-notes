@@ -1,3 +1,5 @@
+[A nice visual explanation of SVD](https://www.youtube.com/watch?v=CpD9XlTu3ys)
+
 # Applications
 
 SVD provides a numerically stable matrix decomposition. SVD makes up the foundation of Principal Component Analysis (PCA).
@@ -144,7 +146,12 @@ Truncated SVD focuses on low-rank approximation of the matrix. Approximates a fe
 
 # Optimal approximations and error bounds
 
-According to the [Eckart-Young Theorem](https://en.wikipedia.org/wiki/Low-rank_approximation#Proof_of_Eckart%E2%80%93Young%E2%80%93Mirsky_theorem_(for_Frobenius_norm)), the truncated SVD guarantees the best matrix approximation of a given rank in the Frobenius norm.
+According to the [Eckart-Young Theorem](https://en.wikipedia.org/wiki/Low-rank_approximation#Proof_of_Eckart%E2%80%93Young%E2%80%93Mirsky_theorem_(for_Frobenius_norm)), the truncated SVD guarantees the best matrix approximation of a given rank in the Frobenius norm. The Frobenius norm of a matrix is given by this:
+
+$$
+||A||_F = \sqrt{\sum_{i,j}(A_{ij})^2}
+$$
+
 
 We can also quantify the error of the rank-$r$ SVD approximation:
 
@@ -170,7 +177,7 @@ $$
 
 # Dominant correlations
 
-SVD is closely related to an eigenvalue problem involving the correlation matrices $XX^*$ and $X^*X$. Essentially, we can think of $U$ and $V$ as eigenvectors of a correlation matrix given by $XX^*$ or $X^*X$.
+SVD is closely related to an eigenvalue problem involving the correlation matrices $XX^*$ (row-wise correlation matrix) and $X^*X$ (column-wise correlation matrix). Essentially, we can think of $U$ and $V$ as eigenvectors of a correlation matrix given by $XX^*$ or $X^*X$. We can describe the eigenvalue decomposition of each of the correlation matrix like this:
 
 $$
 \begin{aligned}
@@ -210,11 +217,28 @@ $$
 \end{aligned}
 $$
 
-Each non-zero singular value of $X$ is a positive square root of an eigenvalue of $X^*X$ and of $XX^*$, which have the same non-zero eigenvalues.
+Each non-zero singular value of $X$ is a positive square root of an eigenvalue of $X^*X$ and of $XX^*$, which have the same non-zero eigenvalues. What this mean is that $\hat{\Sigma}^2$ are the eigenvalues of $X^*X$ and the $V$'s are the eigenvectors of that correlation matrix.
 
 If $X = X^*$ (self-adjoint), the singular values of $X$ are equal to the absolute value of the eigenvalues of $X$.
 
-SVD interpretation: The columns of $U$ are eigenvectors of the correlation matrix $XX^*$, and the columns of $V$ are eigenvectors of $X^*X$.
+SVD interpretation: The columns of $U$ are eigenvectors of the correlation matrix $XX^*$, and the columns of $V$ are eigenvectors of $X^*X$. The first column $u_1$ is the largest eigenvector that is most correlated with the columns of $X$, the second column $u_2$ is the second most important eigenvector, etc. Same thing for the columns of $V$. And their importance is signified by the eigenvalues $\Sigma^2$.
+
+Generally, we don't want to compute the composition matrices in SVD with these correlation matrix eigendecompositions since it's very inefficient and very inaccurate.
 
 # Methods of snapshots
 
+Constructing $XX^*$ is impractical since it's an $n\times n$ matrix. Correlation matrix should not be computed for most cases (it's really only used in some cases like when the $X$ matrix is so large, you can't store it in memory). Instead of computing the eigendecomposition of $XX^*$ to obtain $U$, we only compute the $X^*X$, which is much more manageable.
+
+From $X^* X V = V \hat{\Sigma}^2$, we can obtain $V$ and $\hat{\Sigma}$. If there are zero singular values in $\hat{\Sigma}$, then we only keep the $r$ non-zero part, $\tilde{\Sigma}$, and the corresponding columns $\tilde{V}$ of $V$. Essentially, we can compute $X^* X$ by loading 1 vector at a time from both $X$ and $X^*$ and computing the product of those 2 vectors, then load the next vector to calculate the product, then do it until we get an $m \times m$ matrix. This is very time-consuming.
+
+Because the eigenvalues in the $\Sigma$ matrix for the correlation matrices is the same as $X$, we can use that to approximate $U$. From these matrices, we can approximate $\tilde{U}$ (the first $r$ columns of $U$).
+
+$$
+\tilde{U} = X \tilde{V} \tilde{\Sigma}^{-1}
+$$
+
+From this, we can derive the calculation for $\hat{U}$:
+
+$$
+\hat{U} = X V \hat{\Sigma}^{-1}
+$$
