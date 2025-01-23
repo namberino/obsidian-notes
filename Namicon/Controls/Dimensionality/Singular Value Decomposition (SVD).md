@@ -242,3 +242,6 @@ From this, we can derive the calculation for $\hat{U}$:
 $$
 \hat{U} = X V \hat{\Sigma}^{-1}
 $$
+
+# Pseudo-inverse, least-squares, and regression
+
