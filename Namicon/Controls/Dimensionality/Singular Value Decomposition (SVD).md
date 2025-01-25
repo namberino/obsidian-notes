@@ -255,7 +255,7 @@ $$
 
 Example: We want the transformation to retain angles and lengths because we still want to, say tell a person's face from another person's face. These unitary transformation is key to preserving the relation between the vectors.
 
-# Pseudo-inverse and systems of equations
+# Pseudo-inverse, systems of equations, and least squares
 
 This is a linear system of equations:
 
@@ -295,5 +295,37 @@ $$
 
 For overdetermined systems, the solution to $\tilde{x}$ is the solution that minimizes the error in the fit between $A\tilde{x}$ and $b$. This is called the *least square solution*.
 
-# Least squares regression
+The solution of $Ax = b$ only exists if $b$ is in the column space (span of column vectors) of $A$. For underdetermined systems, $b$ is highly likely to be in the column space of $A$. For overdetermined systems, $b$ is highly unlikely to be in the column space of $A$. If $b$ is in the orthogonal complement, there would be no solutions (vectors perpendicular to a vector in the column space of $A$). If there are some vectors in $A$ that maps to 0 (there's a null space), there are infinitely many solutions.
+
+# Linear regression
+
+Take for example a dataset of patients, we want to predict if they have cancer or not. We could put it into a linear regression model represented by a linear system of equations, where $A$ is the dataset, with each row being a different patient, and each column is a unique feature (age, smoker or not smoker, etc), $b$ is the value indicating the patient's risk of having cancer, and $x$ being our model.
+
+Since this is an overdetermined system, we want to find $x$ so that it minimizes the error between $Ax$ and $b$. We want the model to be able to predict the risk of having cancer as accurately as possible, when we put a person's feature into the model, the model should be able to output the risk of the person having cancer. This is essentially the basis of linear regression.
+
+![](./Assets/svd-linear-regression.png)
+
+A nice thing about this is that we could have multiple factors $A_n$ and the math wouldn't change too much. Instead of finding a best-fit line, we find a best-fit plane for that.
+
+With $A$ being a 1D vector currently, we can compute the SVD for $A$ like this:
+
+$$
+\begin{aligned}
+&U=\frac{a}{||a||_2}
+\\
+&\Sigma=||a||_2
+\\
+&V=1
+\end{aligned}
+$$
+
+We can calculate $\tilde{x}$ with the below equation. We basically take all the values of $b$ and project it onto the direction of $A$, then we normalize the $A$ vector by it's length.
+
+$$
+\tilde{x} = \frac{a^Tb}{||a||_2^2}
+$$
+
+The linear regression is actually quite sensitive to outliers, data points that doesn't really reside near other data points, that could knockoff our model a little bit.
+
+# Principle Component Analysis (PCA)
 
