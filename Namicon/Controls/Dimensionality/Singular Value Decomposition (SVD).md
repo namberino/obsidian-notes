@@ -44,7 +44,7 @@ Where:
 
 Columns of $U$ have the same dimension as the columns of $X$. $U$ is hierarchically arranged so $U_{n-1}$ is somehow more important than $U_n$ in terms of their ability to describe the variance in the columns of $X$. For example, columns of $X$ are face images then columns of $U$ are "eigen-faces". They give a basis to represent each columns of $X$.
 
-$*$ denotes complex conjugate transpose (For real-valued matrices, it's the same as regular transpose $V^* = V^T$).
+$*$ denotes complex conjugate transpose (For real-valued matrices, it's the same as regular transpose $V^* = V^T$. For complex-valued matrices, it's a little different).
 
 Example: Air flow field.
 
@@ -243,5 +243,57 @@ $$
 \hat{U} = X V \hat{\Sigma}^{-1}
 $$
 
-# Pseudo-inverse, least-squares, and regression
+> Note: SVD is the foundation for many things, one of those things is matrix completion. Say we have a matrix with a bunch of missing data, SVD is the foundation for the algorithms that helps us find the correlation between those data and fill in the missing data (algorithms like RPCA).
+
+# Unitary transformations
+
+Unitary transformation essentially preserve the angles and the lengths of any 2 vectors within the vector space during the transformation. A famous example of a unitary transformation is the Fourier transformation. So unitary transformations just rotate vectors. We can say that vector $x$ and vector $y$ will stay unchanged if a transformation $U$ is applied.
+
+$$
+\langle x, y \rangle = \langle Ux, Uy \rangle
+$$
+
+Example: We want the transformation to retain angles and lengths because we still want to, say tell a person's face from another person's face. These unitary transformation is key to preserving the relation between the vectors.
+
+# Pseudo-inverse and systems of equations
+
+This is a linear system of equations:
+
+$$
+Ax = b
+$$
+
+If $A$ is a square matrix, we have exactly as many knowns as unknowns. If $A$ has a non-zero determinant, we can compute $X$ with this:
+
+$$
+x = b A^{-1}
+$$
+
+SVD allows us to generalize this for non-square $A$ matrices. It allows us to invert $A$ and find the best-fit $X$ that comes as close to solving this as possible.
+
+For underdetermined systems of equations ($n \lt m$), we have a "short-fat" matrix $A$, a "tall" vector $x$ and the solution $b$. This is underdetermined because there's not enough measurements to determine a single unique solution for $x$. There will be infinitely many solution $x$ given $b$.
+
+For overdetermined systems of equations ($n \gt m$), we have a "tall-thin" matrix $A$, a "short" vector $x$ and the solution $b$. This is overdetermined because there's no solutions to this system because there's not enough degrees in $x$.
+
+Below is the economy SVD of $A$.
+
+$$
+A = U \Sigma V^* \rightarrow A^{+} = V\Sigma^{-1}U^T
+$$
+
+By decomposing $A$ like this, we can easily find the inverse of each of the composition matrices (with $A^+$ being the pseudo-inverse of $A$).
+
+$$
+\begin{aligned}
+&U \Sigma V^* x = b
+\\
+&V\Sigma^{-1}U^T U \Sigma V^* x = V\Sigma^{-1}U^T b
+\\
+&\tilde{x} = V\Sigma^{-1}U^T b = A^+ b
+\end{aligned}
+$$
+
+For overdetermined systems, the solution to $\tilde{x}$ is the solution that minimizes the error in the fit between $A\tilde{x}$ and $b$. This is called the *least square solution*.
+
+# Least squares regression
 
