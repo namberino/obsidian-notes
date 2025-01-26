@@ -329,3 +329,4 @@ The linear regression is actually quite sensitive to outliers, data points that 
 
 # Principle Component Analysis (PCA)
 
+PCA is the statistical interpretation of SVD. It provides a hierarchical coordinate system based on data. 
