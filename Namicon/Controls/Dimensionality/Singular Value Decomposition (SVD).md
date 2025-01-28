@@ -329,4 +329,113 @@ The linear regression is actually quite sensitive to outliers, data points that 
 
 # Principle Component Analysis (PCA)
 
-PCA is the statistical interpretation of SVD. It provides a hierarchical coordinate system based on data. 
+PCA is the statistical interpretation of SVD. It provides a hierarchical coordinate system based on data. We have a matrix $X$, whose rows are samples.
+
+$$
+X = \begin{bmatrix} -x_1- \\ -x_2- \\ \vdots \end{bmatrix}
+$$
+
+We want to uncover the dominant combination of features that describes as much of the data as possible.
+
+Steps:
+1. Compute the row mean: $\overline{x} = \frac{1}{n} \sum_{j=1}^n x_j$. Then we create a row vector $\overline{X}$ ($n$ rows) from $\overline{x}$ with each elements containing the value of $\overline{x}$.
+2. Subtract the mean from $X$: $B = X - \overline{X}$. This is the mean-centered data.
+3. Compute covariance matrix (basically the correlation matrix from SVD) of the rows of $B$: $C = \frac{1}{n - 1} B^*B$ (the fraction term is for normalization - Bessel’s correction).
+4. Compute the eigenvectors and eigenvalues of $C$ (which will be related to the eigenvectors and eigenvalues of $X$, which will be the principal components). We'll compute $v_n^* B^* B v_n$ for each of the row. We'll get $CV = VD$ where $V$ is the eigenvectors and $D$ is the eigenvalues.
+5. The principal components can be extracted like this: $T = B V$. This is a representation of the singular components because $B = U\Sigma V^*$ in SVD, so $T = U\Sigma V^* V = U\Sigma$. We basically decompose the matrix $X$ into directions of maximal variance called the principal components. The $V$ eigenvectors are called the loadings, it indicates how much each of the principle components have those principal components.
+
+The eigenvalues in $D$ (similar to the values in $\Sigma$) gives an indication of the amount of variance that these principal components and loadings capture.
+
+$$
+C = \frac{1}{n - 1} B^*B = \frac{1}{n - 1} V\Sigma^2 V^* \rightarrow D = \frac{1}{n - 1} \Sigma^2
+$$
+
+The variance the data, given by the diagonal elements $\lambda_k$ of $D$, is related to the singular values. We basically calculate the fraction between the sum of the $rth$ values of $\lambda_k$ and the sum of all the $\lambda_k$, the $rth$ variance and the total variance.
+
+$$
+\begin{aligned}
+&\lambda_k = \frac{1}{n - 1} \sigma_k^2
+\\
+&\frac{\sum^r_{k=1} \lambda_k}{\sum^n_{k=1} \lambda_k}
+\end{aligned}
+$$
+
+# Truncation and alignment
+
+How do you choose the $r$ value for approximation? Sometimes we can use the log graph of $\Sigma$ and pick the elbow point, the point where it transitions from high energy to low energy.
+
+![](./Assets/svd-truncation-r-elbow.png)
+
+Sometimes we pick $r$ so that it approximates 90-99% of the energy. These techniques are very heuristic.
+
+Optimal thresholding can allow us to optimally find $r$. It assumes this:
+
+$$
+X = X_{\text{true}} + \gamma X_{\text{noise}}
+$$
+
+$X_{\text{true}}$ is a low-rank $r$ matrix. $X_{\text{noise}}$ is assumed to be a Gaussian noise with 0 mean and unit variance multiplied by $\gamma$, which indicates whether the noise is large or small (noise magnitude). If we take the SVD of $X_{\text{noise}}$, we get an energy distribution like below. It is assumed that anything larger than the noise floor of the SVD of the noise matrix is signal, and anything smaller than that is noise and should be truncated away. In the graph below, the pink line is the $\Sigma$ values for $X_{\text{noise}}$, and the green line is the $\Sigma$ values for $X$.
+
+![](./Assets/optimal-r-graph-truncation-svd.png)
+
+So basically if our data has a low-rank structure with some gaussian noise matrix added to it, we want to find the first singular value that's larger than the biggest singular value in $X_{\text{noise}}$, then truncate everything below that floor.
+
+For the formula, assuming $X$ is square ($n \times n$) and $\gamma$ is known (we truncate any values $\sigma \lt \tau$):
+
+$$
+\tau = \frac{4}{\sqrt{3}} \gamma \sqrt{n}
+$$
+
+When $X$ is rectangular and $\gamma$ is unknown (with $\omega$ being the correction factor):
+
+$$
+\begin{aligned}
+&\beta = \frac{n}{m}
+\\
+&\tau = \omega(\beta)\sigma_{\text{median}}
+\end{aligned}
+$$
+
+# Data alignment
+
+We assume the data is aligned correctly, otherwise, if the data in, say an image, is not aligned in the expected pattern, the SVD would be bad for pulling out features.
+
+Face recognition algorithms actually takes the features of the face and maps it to a new picture that places the features of the face to the same template. This spatial invariance (same thing appearing in different places) makes a huge difference for these algorithms, so we need to crop and align for these algorithms to handle.
+
+A low-rank matrix that gets rotated or translated or scaled could become a high-rank matrix, which could cause trouble to the algorithms. The correlation structure would get destroyed. This is a pitfall that we can fall into when working with PCA and SVD. This side of linear algebra is under ongoing research.
+
+Side note: CNN can actually handle these sorts of translations and spatial invariance very well.
+
+# Randomized SVD
+
+For large data matrix, the SVD takes a little while to compute. Measurement dimension is increasing rapidly. With the SVD, even with the high dimensional data, there's a few key patterns that we would care about for building or understanding the data. There would still be a low intrinsic rank, a few key features of the data that actually matter.
+
+For a given data matrix $X$, we'd randomly sample the column space of the matrix. With high probability, we're gonna find the subspace that will be spanned by the dominant columns of the $U$ matrix.
+
+Step 1: Take a random projection matrix $P$ that we can multiply on the column space of $X$: $P \in R^{m \times r}$. We multiply $P$ with $X$, which will shrink the column space to $r$-columns: $Z = XP$. Then we compute the QR factorization on $Z$, with $Q$ being the orthonormal basis for $Z$ and $X$ (because if $Z$ was randomly sampled, there's a high probability that it should also contain the dominant features of $X$): $Z = QR$.
+
+![](./Assets/step-1-randomized-svd-linalg.png)
+
+Step 2: Project $X$ onto the $Q$ subspace: $Y = Q^*X$, then compute the SVD of $Y$: $Y = U_Y \Sigma V^*$. The $\Sigma$ and $V$ of $Y$ would be the same as the $\Sigma$ and $V$ of $X$.
+
+Step 3: Reconstruct the high-dimensional modes $U_X = Q U_Y$.
+
+![](./Assets/step-2-3-randomized-svd-linalg.png)
+
+All of this calculation is actually less expensive then computing the SVD of $X$ directly.
+
+# Power iterations and Oversampling
+
+These are 2 different versions of the vanilla randomized SVD.
+
+Oversampling means we just add a couple extra columns to our projection matrix $P$, maybe 5 or 10. This gives us a much better chance of capturing the dominant feature of $X$.
+
+Power iterations is especially useful if the data matrix is not exactly as low-rank as we want it to be. Sometimes the data matrix has a much slower drop off in singular values and not a steep drop off. By taking the power of $X$, we basically make the singular values drop off much steeper, the low-energy values get lower and the high-energy values get higher.
+
+$$
+X^q = (XX^*)^q X
+$$
+
+This is much more expensive, it requires $q$ passes through the $X$ matrix. 
+
+The approximation with the best possible rank-$r$ subspace $Q$ will have error greater than or equal to the next truncated singular value of $X$.
