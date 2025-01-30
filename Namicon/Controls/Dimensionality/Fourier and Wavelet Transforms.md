@@ -38,3 +38,47 @@ With $||\cos(kx)||^2 = ||\sin(kx)||^2 = \pi$. So the coefficients can be thought
 
 In real life, we can't take infinite sums, so we can only approximate functions with the Fourier series.
 
+Let's redefine the function $f(x)$ from 0 to $L$. These functions will be periodic on $L$ domain.
+
+$$
+f(x) = \frac{a_0}{2} + \sum_{k=1}^\infty(a_k \cos(\frac{2\pi kx}{L}) + b_k \sin(\frac{2\pi kx}{L}))
+$$
+
+With the coefficients given by this.
+
+$$
+\begin{aligned}
+&a_k = \frac{2}{L} \int_{0}^L f(x) \cos(\frac{2\pi kx}{L}) dx
+\\
+&b_k = \frac{2}{L} \int_{0}^L f(x) \sin(\frac{2\pi kx}{L}) dx
+\end{aligned}
+$$
+
+# Inner products in Hilbert space
+
+The inner products of functions and the inner products of vectors are pretty consistent to each other. The inner product of functions, similar to the inner products of vectors, can tell us how similar the functions are.
+
+If we discretize the function into $f_n$ and $g_n$ discrete points and we sample these points on discrete intervals $x_n$, we can take the inner products of those discrete points as vectors. As the $\Delta x$ becomes smaller and smaller, approaching 0 and recovering the function, we get the full inner product of the 2 functions.
+
+$$
+f = \begin{bmatrix} f_1 \\ f_2 \\ \vdots \\ f_n \end{bmatrix}, \; g = \begin{bmatrix} g_1 \\ g_2 \\ \vdots \\ g_n \end{bmatrix}
+$$
+
+Taking the inner product of these 2 vectors will give us the inner product of the 2 functions as $n$ goes to infinity or $\Delta x$ goes to 0.
+
+$$
+\langle f, g \rangle = \sum^n_{k=1} f_k g_k
+$$
+
+We also normalize this inner product of this function with $\Delta x$ so that even if our approximation domain is larger, our inner product won't get larger because it's the same functions.
+
+$$
+\langle f, g \rangle \Delta x = \sum^n_{k=1} f(x_k) g(x_k) \Delta x
+$$
+
+This basically gives us the Riemann approximation of our function inner product.
+
+![](./Assets/riemann-approximation-fourier-function-inner-products.png)
+
+# Complex Fourier series
+
