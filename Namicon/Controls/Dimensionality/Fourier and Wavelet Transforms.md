@@ -82,3 +82,45 @@ This basically gives us the Riemann approximation of our function inner product.
 
 # Complex Fourier series
 
+We can also write the Fourier series with complex numbers:
+
+$$
+f(x) = \sum^\infty_{k=-\infty} c_k e^{ikx}
+$$
+
+With the Euler's expansion of the $e$ term being:
+
+$$
+e^{ikx} = \cos(kx) + i \sin(kx)
+$$
+
+So we can expand this complex Fourier series further:
+
+$$
+f(x) = \sum^\infty_{k=-\infty} c_k e^{ikx} = \sum^\infty_{k=-\infty} (\alpha_k + i \beta_k) (\cos(kx) + i \sin(kx))
+$$
+
+If $f(x)$ is real then $c_k = \overline{c_{-k}}$.
+
+This complex Fourier series is a more compact version of the Fourier series and it also expresses complex functions. Each of the $e^{ikx}$ is an orthogonal basis in the function space that allows us to construct this Fourier series that can approximate $f(x)$.
+
+Assuming $\psi_k = e^{ikx}$, and we're evaluating a $2\pi$ periodic function:
+
+$$
+\langle \psi_j, \psi_k \rangle = \int_{-\pi}^\pi e^{ijx} \overline{e^{ikx}} dx = \int_{-\pi}^\pi e^{ijx} e^{-ikx} dx = \int_{-\pi}^\pi e^{i(j - k) x} dx
+$$
+
+Integrating this will give us this:
+
+$$
+\langle \psi_j, \psi_k \rangle = \frac{1}{i(j-k)} \biggr[e^{i(j-k)x}\biggl]^\pi_{-\pi}
+$$
+
+Say for example $j-k$ evaluates to 2. If we plug that into the equation above, we get that $e^{i2\pi} = e^{i2 (-\pi)}$, meaning the inner product will be 0. So the inner product is 0 if $j\ne k$, and $2\pi$ if $j = k$. This shows that $\psi_j$ and $\psi_k$ are orthogonal to each other. This tells us the the $e^{ikx}$ gives us orthogonal bases for our function space.
+
+The $c_k$ term is the inner product of the function with this orthogonal basis term. With $\langle f(x), \psi_k \rangle$ being $c_k$ and $\psi_k$ being $e^{ikx}$ and $\frac{1}{2\pi}$ being the normalization term.
+
+$$
+f(x) = \frac{1}{2\pi} \sum^\infty_{k=-\infty} \langle f(x), \psi_k \rangle \psi_k
+$$
+
