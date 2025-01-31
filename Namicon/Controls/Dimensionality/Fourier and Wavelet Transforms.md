@@ -1,4 +1,4 @@
-# Fourier transforms
+# Fourier and Wavelet transforms
 
 The Fourier transformation is a coordinate transformation that's useful for representing data. The Fourier transformation can transform operators into eigenvalues and eigenfunctions (which are made up of sines and cosines of different frequencies).
 
@@ -123,4 +123,6 @@ The $c_k$ term is the inner product of the function with this orthogonal basis t
 $$
 f(x) = \frac{1}{2\pi} \sum^\infty_{k=-\infty} \langle f(x), \psi_k \rangle \psi_k
 $$
+
+# Fourier transform
 
