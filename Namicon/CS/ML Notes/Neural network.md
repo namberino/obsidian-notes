@@ -19,7 +19,7 @@ So we can construct neurons for each of these factors:
 
 Then we can wire the output of these 3 neurons to a new neuron, whose output will tell us the probability that the product would become a top seller.
 
-![](./Assets/simple-neural-network-illustration.png)
+![](simple-neural-network-illustration.png)
 
 The 3 neurons will be grouped into 1 layer (the input layer) and the 1 neuron is also grouped into 1 layer (the output layer). A layer is a grouping of neurons that take in similar set of inputs and outputs together.
 

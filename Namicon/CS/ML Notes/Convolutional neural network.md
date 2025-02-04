@@ -135,7 +135,7 @@ $$
 
 For a 3x3 kernel with 9 weights in total, doing this will give us 9 partial derivatives for each of the weights and 1 partial derivative for the bias.
 
-![](./Assets/cnn-9-partial-derivs.png)
+![](cnn-9-partial-derivs.png)
 
 We can utilize matrix multiplication here, with each of the $a_n$ value in a matrix multiplied with the $\frac{\partial L}{\partial z_n}$ term. Solving the partial derivatives will give us the final lost matrix that we can use multiply with $\alpha$ to update the weights.
 

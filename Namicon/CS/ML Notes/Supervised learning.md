@@ -2,7 +2,7 @@
 
 A model that estimates the linear relationship between between dependent variables.
 
-![](./Assets/linear-regression-example-image.png)
+![](linear-regression-example-image.png)
 
 Formula:
 $$
@@ -145,11 +145,11 @@ This is because small changes to the weights associated with the features with l
 
 Running gradient descent on something like this may end up with an oscillation phenomenon for a long time before it reaches the global minimum. So what we need to do is scale the features for these cases where the data is disproportionate in terms of magnitude.
 
-![](./Assets/feature-scaling-contour-map-unscaled.png)
+![](feature-scaling-contour-map-unscaled.png)
 
 We can the features to a range of $(0, 1)$ making the range comparable to each other. This also makes the contour map of the more evenly distributed.
 
-![](./Assets/feature-scaling-contour-map-scaled.png)
+![](feature-scaling-contour-map-scaled.png)
 
 # Implementing feature scaling
 
@@ -174,7 +174,7 @@ $$
 
 We start with the original features, then scale them so that they are centered around 0. Making it so that the features now have both negative and positive values, usually between -1 and +1
 
-![](./Assets/mean-normalization-graph.png)
+![](mean-normalization-graph.png)
 
 To calculate this, first we need to find the average of the feature. 
 
@@ -199,11 +199,11 @@ $$
 
 We need to calculate the standard deviation $\sigma$ of each feature. Standard deviation is a measure of of the amount of variation of the values of a variable about its mean.
 
-![](./Assets/standard-deviation-diagram.png)
+![](standard-deviation-diagram.png)
 
 Low $\sigma$ indicates that values tend to be close to the mean. High $\sigma$ indicates that values tend to be more spread out.
 
-![](./Assets/example-standard-deviation-bell-curve.png)
+![](example-standard-deviation-bell-curve.png)
 
 So we need to calculate both the mean $\mu$ and the standard deviation $\sigma$ for this.
 
@@ -276,7 +276,7 @@ This algorithm allows us to fit non-linear functions to our data.
 
 Example:
 
-![](./Assets/housing-size-price-example-polynomial-regression.png)
+![](housing-size-price-example-polynomial-regression.png)
 
 For this dataset, a straight line wouldn't fit this very well, we want a curve that better fits the data.
 
@@ -314,13 +314,13 @@ Usually, the classification problems where there's only 2 possible outputs are c
 
 Example: Malignant tumor classification
 
-![](./Assets/tumor-classification-example.png)
+![](tumor-classification-example.png)
 
 Linear regression would not work well here because it tries to predict not just 1s and 0s, but also values ranging from 1 and 0 along with values less than 0 and larger than 1.
 
 We want to predict the classes. What we could do is pick a threshold, say 0.5, and if the linear regression model outputs a value below the threshold, the output would be set to 0. Else if it's larger or equal to the threshold, the output would be set to 1. However, this threshold for the linear regression model doesn't cover datasets of different sizes. For this example, if we were to add a "1" data point to the far right of the graph, it would modify the the linear regression line and change the threshold point. So if we try to use our old threshold value, we'd end up misclassifying some "1" data points.
 
-![](./Assets/linear-regression-classification-example.png)
+![](linear-regression-classification-example.png)
 
 The line where the threshold and the linear regression line intersects is called the *decision boundary*.
 
@@ -328,17 +328,17 @@ The line where the threshold and the linear regression line intersects is called
 
 Continuing with the malignant tumor classification example:
 
-![](./Assets/tumor-classification-example.png)
+![](tumor-classification-example.png)
 
 Logistic regression will fit a curve that will better represent data.
 
-![](./Assets/malignant-tumor-logistic-regression-example-curve.png)
+![](malignant-tumor-logistic-regression-example-curve.png)
 
 For this, when the input is compared to a threshold, it will output 1 or 0. Same thing as the linear regression before, except this time, the model fits better with the dataset, allowing for correct classification.
 
 ## Sigmoid function
 
-![](./Assets/sigmoid-function-graph.png)
+![](sigmoid-function-graph.png)
 
 The sigmoid function outputs a value between 0 and 1. It can be described like this:
 
@@ -392,7 +392,7 @@ $$
 
 Example: Classification problem with 2 features ($x_1$ and $x_2$)
 
-![](./Assets/logistic-regression-threshold-example.png)
+![](logistic-regression-threshold-example.png)
 
 With 2 features, we can build a logistic regression model like this:
 
@@ -422,7 +422,7 @@ $$
 
 The decision boundary would be this line:
 
-![](./Assets/logistic-regression-decision-boundary-example.png)
+![](logistic-regression-decision-boundary-example.png)
 
 This is the decision boundary when the parameters are setup with those particular values. Different parameter choice would change this boundary. 
 
@@ -430,7 +430,7 @@ This is the decision boundary when the parameters are setup with those particula
 
 Example: 2 features, non-linear dataset
 
-![](./Assets/non-linear-decision-boundary-example-graph.png)
+![](non-linear-decision-boundary-example-graph.png)
 
 For non-linear datasets, we can use polynomials:
 
@@ -452,7 +452,7 @@ $$
 
 So the decision boundary for this particular parameters setup could be drawn like this:
 
-![](./Assets/non-linear-decision-boundary-example-decision-line.png)
+![](non-linear-decision-boundary-example-decision-line.png)
 
 When $x_1^2 + x_2^2 \ge 1$, the predicted value will be the x's outside of the circle. When $x_1^2 + x_2^2 \lt 1$, the predicted value will be the x's outside of the circle.
 
@@ -494,7 +494,7 @@ $$
 
 Because the function would only output value ranging from 0 to 1, we can use logarithms to determine the error between the target value and output value. Negative logarithm has a graph like this:
 
-![](./Assets/negative-logarithm-graph.png)
+![](negative-logarithm-graph.png)
 
 Since our function $f$ only outputs values ranging from 0 to 1, we'd only care about the part highlighted by the pink square. Negative logarithms indicate that if the input value approaches 1, the output would be 0, if it approaches 0, then the output would get really high (approaches infinity). So if we're trying to predict a data point with the label $y = 1$, then we'd want our function to output something close to 1. If our function outputs something close to 1, the negative logarithm will give an cost close to 0, which is what we want. For the label $y=0$, it's basically the opposite of the label $y=1$. We're basically just mirroring the negative logarithm line. This loss function would be a convex loss function for the logistic regression model.
 
@@ -552,7 +552,7 @@ Overfitting is when the model fit too well with the training dataset but fits po
 
 We want our model to fit the data just at the right amount for it to perform well and generalize well.
 
-![](./Assets/overfitting-underfitting-example.png)
+![](overfitting-underfitting-example.png)
 
 Solution to overfitting:
 - Collect more training data.
