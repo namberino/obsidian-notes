@@ -218,6 +218,26 @@ Sometimes we can approximate the derivative of $f(x)$ more accurately by taking 
 
 We can also transform partial differential equations into ordinary differential equations with the Fourier transform. Say we have a PDE $u_{tt} = c u_{xx}$ with $t$ being time and $x$ being space, if we take the Fourier transform in space then we get $\hat{u}_{tt} = -\omega^2 \hat{u}$ (because we took the 2 $x$ derivative of the Fourier transform, which gave us $i^2 \omega^2 \mathfrak{F}(u) = -1 \omega^2 \mathfrak{F}(u)$). Now we have an ODE. To be more explicit, $u(x, t)$ is a function of $x$ and $t$, and $\hat{u}(\omega, t)$ is a function of $\omega$ and $t$. We basically swap out space $x$ with a spatial frequency number $\omega$.
 
+# Linearity of the Fourier transform
+
+The Fourier transform is a linear operator:
+
+$$
+\begin{aligned}
+&\mathfrak{F}(\alpha f(x) + \beta g(x)) = \alpha \mathfrak{F}(f) + \beta \mathfrak{F}(g)
+\\
+&\mathfrak{F}^{-1}(\alpha \hat{f}(\omega) + \beta \hat{g}(\omega)) = \alpha \mathfrak{F}^{-1}(\hat{f}) + \beta \mathfrak{F}^{-1}(\hat{g})
+\end{aligned}
+$$
+
+# Parseval's theorem
+
+The Fourier transform preserves the $L_2$-norm up to a constant. This is closely related to unitarity, so that two functions will retain the same inner product before and after the Fourier transform. This property is useful for approximation and truncation, providing the ability to bound error at a given truncation.
+
+$$
+\int_{-\infty}^{\infty} |\hat{f}(\omega)|^2 d\omega = 2\pi \int_{-\infty}^{\infty} |f(x)|^2 dx
+$$
+
 # Convolution integrals with Fourier transform
 
 Convolution integral allows us to add 2 functions to form a 3rd function. What the $x$ mean is that as $\xi$ goes from $-\infty$ to $\infty$, we're sliding $g$ across $f$ or vice versa and we're adding up their product as we're sliding, meaning it expresses the amount of overlap one function has as it is shifted over the other function.
@@ -232,3 +252,20 @@ $$
 \mathfrak{F}(f * g) = \mathfrak{F}(f)\mathfrak{F}(g) = \hat{f}\hat{g}
 $$
 
+Below is the proof that multiplying functions in the Fourier transform's frequency domain is the same as convolving functions in the spatial domain.
+
+$$
+\begin{aligned}
+\mathfrak{F}^{-1} (\hat{f}\hat{g}) (x) &= \frac{1}{2\pi} \int_{-\infty}^{\infty} \hat{f}(\omega) \hat{g}(\omega) e^{i\omega x} d\omega
+\\
+&= \int_{-\infty}^{\infty} \hat{f}(\omega) e^{i\omega x} \biggr(\frac{1}{2\pi} \int_{-\infty}^{\infty} g(y) e^{-i\omega y} dy \biggl) d\omega
+\\
+&= \frac{1}{2\pi} \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} g(y) \hat{f}(\omega) e^{i\omega (x-y)} d\omega dy
+\\
+&= \int_{-\infty}^{\infty} g(y) \biggr(\frac{1}{2\pi} \int_{-\infty}^{\infty} \hat{f}(\omega) e^{i\omega (x-y)} d\omega \biggl) dy
+\\
+&= \int_{-\infty}^{\infty} g(y) f(x - y) dy
+\\
+&= g * f = f * g
+\end{aligned}
+$$
