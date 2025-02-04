@@ -124,5 +124,111 @@ $$
 f(x) = \frac{1}{2\pi} \sum^\infty_{k=-\infty} \langle f(x), \psi_k \rangle \psi_k
 $$
 
+If necessary to expand a function $f(x)$ of period $2L$ we can use the following expressions ([reference](https://math24.net/complex-form-fourier-series.html)):
+
+$$
+\begin{aligned}
+&f(x) = \sum^\infty_{n=-\infty} c_n e^{\frac{in\pi x}{L}}
+\\
+&c_n = \frac{1}{2\pi} \langle f(x), \psi_n \rangle = \frac{1}{2L} \int_{-L}^{L} f(x) e^{\frac{-i n \pi x}{L}} dx
+\\
+&\omega_n = k \frac{\pi}{L} = k \Delta \omega
+\end{aligned}
+$$
+
 # Fourier transform
+
+The Fourier transform is a non-periodic Fourier series. It generalizes the Fourier series to an infinite size domain. It's a Fourier series as we take $L \rightarrow \infty$. Because the function is non-periodic and $L \rightarrow \infty$, the change in frequency ($\Delta \omega$) will go to 0.
+
+$$
+f(x) = \lim_{\Delta \omega \rightarrow 0} \sum_{k=-\infty}^\infty \frac{\Delta \omega}{2\pi} \int_{-\pi / \Delta \omega}^{\pi / \Delta \omega} f(\xi) e^{-ik \Delta \omega \xi} d\xi \; e^{ik\Delta \omega x}
+$$
+
+All we're doing here is placing in the $c_k$ term in the Fourier series with the $e$ term in the Fourier series together and taking the limit of the change in frequency going to 0 or $L$ goes to infinity.
+
+Analyzing this expression will give us this:
+
+$$
+f(x) = \int_{-\infty}^{\infty} \frac{1}{2\pi} \int_{-\infty}^{\infty} f(\xi) e^{-i\omega \xi} d\xi \; e^{i\omega x} d\omega
+$$
+
+Now we can define the Fourier transform:
+
+$$
+\hat{f}(\omega) = \mathfrak{F}(f(x)) = \int_{-\infty}^{\infty} f(x) e^{-i\omega x} dx
+$$
+
+Instead of having a discrete set of $c_k$ like in the Fourier series, now we have a continuum of Fourier coefficients in the $\hat{f}(\omega)$.
+
+Now we can also define the inverse Fourier transform too:
+
+$$
+f(x) = \mathfrak{F}^{-1}(\hat{f}(\omega)) = \frac{1}{2\pi} \int_{-\infty}^{\infty} \hat{f}(\omega) \; e^{i\omega x} d\omega
+$$
+
+That's the Fourier transform pair. If we have a function $f(x)$ defined from $-\infty$ to $\infty$, we can use the Fourier transform to get a continuous function of Fourier coefficients (which is a function of frequencies) $\hat{f}(\omega)$, so the frequencies are continuously varying. With those Fourier coefficients, we can work in both the function space and the frequency space. Once we're finished working in the frequency space, we can inverse Fourier transform the coefficients to recover the original $f(x)$ function.
+
+$$
+\begin{aligned}
+&\hat{f}(\omega) = \mathfrak{F}(f(x)) = \int_{-\infty}^{\infty} f(x) e^{-i\omega x} dx
+\\
+&f(x) = \mathfrak{F}^{-1}(\hat{f}(\omega)) = \frac{1}{2\pi} \int_{-\infty}^{\infty} \hat{f}(\omega) \; e^{i\omega x} d\omega
+\end{aligned}
+$$
+
+There's a lot of nice properties about the $\mathfrak{F}$ operator. It's easy to compute the derivatives of functions in the Fourier transform domain, making it very useful for solving differential equations. It's also a unitary operator in the function space.
+
+# Solving derivative with Fourier transform
+
+Say we have a derivative of a function $f(x)$ and we want to take the Fourier transform of that derivative:
+
+$$
+\mathfrak{F}(\frac{d}{dx} f(x)) = \int_{-\infty}^{\infty} \frac{df}{dx} e^{-i\omega x} dx
+$$
+
+Integrating by parts we have $\int udv = uv - \int vdu$. So assuming $\frac{df}{dx} = dv$ and $e^{i\omega x} = u$, we get $uv = f(x) e^{-i\omega x}$ and $\int vdu = \int_{-\infty}^{\infty} f(x) (-i \omega e^{-i \omega x}) dx$. 
+
+$$
+\begin{aligned}
+\mathfrak{F}(\frac{d}{dx} f(x)) &= \int_{-\infty}^{\infty} \frac{df}{dx} e^{-i\omega x} dx 
+\\
+&= [f(x) e^{-i\omega x}]^{\infty}_{-\infty} - \int_{-\infty}^{\infty} f(x) (-i \omega e^{-i \omega x}) dx
+\end{aligned}
+$$
+
+$e^{-i\omega x}$ is going to give us a real value. It will have at most a length of 1 and it's gonna be on a circle with an angle given by $-\omega x$.
+
+> Note: The Fourier transform only make sense if $f(x)$ decays to 0 at $_-^+\infty$.
+
+The $f(x)$ evaluated at the bounds of the function $^+_-\infty$ has to be equal to 0. So the $uv$ term will be evaluated to 0. This is nice because the entire integral term is just the Fourier transform of $f(x)$: $\mathfrak{F}(f(x))$.
+
+$$
+\begin{aligned}
+\mathfrak{F}(\frac{d}{dx} f(x)) &= \int_{-\infty}^{\infty} \frac{df}{dx} e^{-i\omega x} dx 
+\\
+&= [f(x) e^{-i\omega x}]^{\infty}_{-\infty} - \int_{-\infty}^{\infty} f(x) (-i \omega e^{-i \omega x}) dx
+\\
+&= i \omega \int_{-\infty}^{\infty} f(x) (e^{-i \omega x}) dx
+\\
+&= i\omega \mathfrak{F}(f(x))
+\end{aligned}
+$$
+
+Sometimes we can approximate the derivative of $f(x)$ more accurately by taking the Fourier transform of it then taking the inverse Fourier transform. This is called the *spectral derivative*.
+
+We can also transform partial differential equations into ordinary differential equations with the Fourier transform. Say we have a PDE $u_{tt} = c u_{xx}$ with $t$ being time and $x$ being space, if we take the Fourier transform in space then we get $\hat{u}_{tt} = -\omega^2 \hat{u}$ (because we took the 2 $x$ derivative of the Fourier transform, which gave us $i^2 \omega^2 \mathfrak{F}(u) = -1 \omega^2 \mathfrak{F}(u)$). Now we have an ODE. To be more explicit, $u(x, t)$ is a function of $x$ and $t$, and $\hat{u}(\omega, t)$ is a function of $\omega$ and $t$. We basically swap out space $x$ with a spatial frequency number $\omega$.
+
+# Convolution integrals with Fourier transform
+
+Convolution integral allows us to add 2 functions to form a 3rd function. What the $x$ mean is that as $\xi$ goes from $-\infty$ to $\infty$, we're sliding $g$ across $f$ or vice versa and we're adding up their product as we're sliding, meaning it expresses the amount of overlap one function has as it is shifted over the other function.
+
+$$
+(f * g) = \int_{-\infty}^{\infty} f(x - \xi) g(\xi) d\xi
+$$
+
+We can simplify a convolution integral in a spatial variable by Fourier transforming the functions $f$ and $g$. The Fourier transform of the convolution integral becomes just a product of the Fourier transform domain.
+
+$$
+\mathfrak{F}(f * g) = \mathfrak{F}(f)\mathfrak{F}(g) = \hat{f}\hat{g}
+$$
 
