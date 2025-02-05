@@ -238,6 +238,10 @@ $$
 \int_{-\infty}^{\infty} |\hat{f}(\omega)|^2 d\omega = 2\pi \int_{-\infty}^{\infty} |f(x)|^2 dx
 $$
 
+The norm represents how much energy there is under the curve of $f$ and under the curve of the Fourier transform. These 2 integrals are equal up to a constant $2\pi$.
+
+If there's some really small Fourier coefficients, we just ignore them and zero them out. The question is if we zero them out, how big of an impact would that have on $f$. What this theorem says is that if there's Fourier coefficients that are negligibly small and we set them to 0 (truncating them), because the left-hand side integral doesn't change much, we're still going to be able to capture most of the energy of $f$.
+
 # Convolution integrals with Fourier transform
 
 Convolution integral allows us to add 2 functions to form a 3rd function. What the $x$ mean is that as $\xi$ goes from $-\infty$ to $\infty$, we're sliding $g$ across $f$ or vice versa and we're adding up their product as we're sliding, meaning it expresses the amount of overlap one function has as it is shifted over the other function.
@@ -269,3 +273,75 @@ $$
 &= g * f = f * g
 \end{aligned}
 $$
+
+# Heat equation example
+
+> Fun fact: Fourier devised the Fourier transform to solve the heat equation
+
+1D heat equation:
+
+$$
+u_t = \alpha^2 u_{xx}
+$$
+
+The way we can think about this is we have a 1D piece of metal with some initial heat distribution at time 0 for all of space: $u(x, 0)$, so $u$ is a function of $x$ and $t$: $u(x, t)$. As $x \rightarrow ^+_-\infty$, the heat distribution will decay to 0 otherwise this would have infinite heat energy, which is impossible.
+
+When we Fourier transform this PDE, we'll get an ODE that's easier to solve. We can take the Fourier transform of $u(x, t)$, we can choose $x$ or $t$, space or time. We'll Fourier transform with respect to space because space is our coordinate that goes from $-\infty$ to $\infty$ (usually we think of time as going from 0 to $\infty$).
+
+$$
+\mathfrak{F}(u(x, t)) = \hat{u}(\omega, t)
+$$
+
+If we take the Fourier transform of $u_x$ and Fourier transform of $u_{xx}$, we can use the derivative property of the Fourier transform (remember that $\hat{u}$ is still a function of $\omega$ and $t$, our time variable didn't change):
+
+$$
+\begin{aligned}
+\mathfrak{F}(\frac{d}{dx} u_{xx}) = \mathfrak{F}(u_x) = i\omega \hat{u}
+\\
+\mathfrak{F}(u_{xx}) = i^2\omega^2 \hat{u} = -w^2 \hat{u}
+\end{aligned}
+$$
+
+Now we Fourier transform the PDE with respect to space. This will give us an ODE with a time derivative for each fixed $\omega$, meaning we get a family of ODEs for every $\omega$.
+
+$$
+\mathfrak{F}(u_t) = \frac{d}{dt}\hat{u} = -\omega^2 \alpha^2 \hat{u}
+$$
+
+Now we can solve this ODE:
+
+$$
+\begin{aligned}
+&\hat{u}(\omega, t) = e^{-\omega^2 \alpha^2 t} \hat{u}(\omega, 0)
+\end{aligned}
+$$
+
+The $e^{-\omega^2 \alpha^2 t} \hat{u}$ is a Gaussian kernel. $t$ is the product of 2 functions of $\omega$. It's kinda like the $e^{-\omega^2 \alpha^2 t} \hat{u}$ term is $\hat{f}$ and the $\hat{u}(\omega, 0)$ term is $\hat{g}$. If we inverse Fourier transform $\hat{f}\hat{g}$, we get the convolution integral of $f$ and $g$.
+
+Now we'll need to transform this back from the Fourier coefficients into the physical coordinates to get the final time's heat distribution.
+
+$$
+u(x, t) = \mathfrak{F}^{-1}(\hat{u}(\omega, t)) = \mathfrak{F}^{-1}(e^{-\omega^2 \alpha^2 t}) * \mathfrak{F}^{-1}(\hat{u}(\omega, 0))
+$$
+
+The $\hat{u}(\omega, 0)$ is just the Fourier transform of heat distribution at the initial time 0:
+
+$$
+u(x, t) = \mathfrak{F}^{-1}(e^{-\omega^2 \alpha^2 t}) * u(x, 0)
+$$
+
+The inverse Fourier transform of a Gaussian kernel is a Gaussian kernel.
+
+$$
+\begin{aligned}
+u(x, t) &= \text{Gaussian}(x, t) * u(x, 0)
+\\
+&= \frac{1}{2\alpha \sqrt{\pi t}} e^{-\frac{x^2}{4\alpha^2 t}} * u(x, 0)
+\end{aligned}
+$$
+
+What this mean is as time gets bigger, the Gaussian kernel will get more spread out and more diffused. This is called a *diffusion kernel*.
+
+So we're taking the diffusion kernel, slide it across $u(x, 0)$, which is the initial heat distribution, and take the dot product. The longer times goes on, the smoother and more spread out this diffusion kernel gets, the more it smoothes out the initial condition of our heat distribution, meaning the heat will eventually cool off.
+
+So this is essentially what the heat equation does, it takes the initial conditions and it convolves that with a gaussian kernel that gets more spread out in time.
