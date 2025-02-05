@@ -345,3 +345,85 @@ What this mean is as time gets bigger, the Gaussian kernel will get more spread 
 So we're taking the diffusion kernel, slide it across $u(x, 0)$, which is the initial heat distribution, and take the dot product. The longer times goes on, the smoother and more spread out this diffusion kernel gets, the more it smoothes out the initial condition of our heat distribution, meaning the heat will eventually cool off.
 
 So this is essentially what the heat equation does, it takes the initial conditions and it convolves that with a gaussian kernel that gets more spread out in time.
+
+# Discrete Fourier Transform (DFT)
+
+DFT is actually just approximating Fourier series on a finite interval. DFT is essentially just a Fourier series on data points instead of a function. The DFT is really important as it leads to the Fast Fourier Transform (FFT).
+
+The DFT is a mathematical transformation that can be written in terms of matrix multiplication. The FFT is a computationally efficient way of computing the DFT that scales to large datasets. So the FFT is how we compute the DFT.
+
+Say we have a discrete vector of data $\vec{x}$ full of discrete points $x_n$ with values $f_n$, and maybe we believe there's an underlying function for this data vector.
+
+$$
+\vec{x} = \begin{bmatrix} f_0 \\ f_1 \\ \vdots \\ f_{n-1} \end{bmatrix}
+$$
+
+Now we want to compute the discrete Fourier series of that data vector. We also want to break this data up into a sum of sines and cosines. This can be very useful. If we have, say audio data, we can figure out what kind of tones add up to create that data. It's also nice for approximating derivatives using the Fourier transform derivative properties.
+
+Below is the DFT pairs (The transform and its inverse):
+
+$$
+\begin{aligned}
+&\hat{f}_k = \sum_{j=0}^{n-1} f_j e^{-i2\pi jk / n}
+\\
+&f_k = \frac{1}{n} \sum_{j=0}^{n-1} \hat{f}_j e^{i2\pi jk / n}
+\end{aligned}
+$$
+
+The DFT is a linear operator (i.e., a matrix) that maps the data points in $f$ to the frequency domain $\hat{f}$. $\hat{f}_n$ will tell us how much of the $nth$ frequency is in the data.
+
+$$
+\{f_0, f_1, ..., f_{n-1}\} \xrightarrow{DFT} \{\hat{f}_0, \hat{f}_1, ..., \hat{f}_{n-1}\}
+$$
+
+The $\hat{f}_n$ tell us how much of each frequencies to add up to recover $f$.
+
+The exponential $e^{-i2\pi / n}$ is defined as $\omega_n$, which is some fundamental frequency that's related to what kinds of sines and cosines we can approximate with $n$ discrete values in a domain $x$.
+
+$$
+\omega_n = e^{-i2\pi / n}
+$$
+
+We can use $\omega_n$ to compute a matrix to multiply $f_n$ and give us our Fourier transform.
+
+$$
+\begin{bmatrix} \hat{f}_0 \\ \hat{f}_1 \\ \vdots \\ \hat{f}_{n-1} \end{bmatrix} = \begin{bmatrix} 1 & 1 & 1 & ... & 1 \\ 1 & \omega_n & \omega_n^2 & ... & \omega_n^{n-1} \\ 1 & \omega_n^2 & \omega_n^4 & ... & \omega_n^{2(n-1)} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\ 1 & w_n^{n-1} & w_n^{2(n-1)} & ... & w_n^{(n-1)^2} \end{bmatrix} \begin{bmatrix} f_0 \\ f_1 \\ \vdots \\ f_{n-1} \end{bmatrix}
+$$
+
+The matrix is called the *DFT matrix*. It's pretty expensive to compute this matrix and multiply it with the vector. We're always going to be using the FFT to compute the DFT. The matrix has some unique properties: It's a Vandermonde matrix, it's a unitary matrix.
+
+Because $w_n$ is complex, $\hat{f}_n$ is also complex. It not only tells us how much of the $nth$ mode of sines and cosines there are but it also tells us the phase between the sines and cosines of the $nth$ mode.
+
+# Fast Fourier Transform (FFT)
+
+The DFT using 2 for loops has a time complexity of $O(n^2)$. It's very expensive. The FFT achieve the same thing but with a time complexity of $O(n \log(n))$. The FFT is how we compute the DFT efficiently. FFT can be used to solve PDEs, de-noise data, analyze data, and compression.
+
+Let's say $n = 2^{10} = 1024$. The DFT may be implemented much more efficiently if the number of data points $n$ is a power of 2. With $F_n$ being the DFT matrix, we have:
+
+$$
+\hat{f} = F_{1024} f 
+$$
+
+What we can do is reorder the $f$ vector to have the even indices $f_n$ values on top and the odd indices $f_n$ values on the bottom. $I_{n/2}$ being an identity matrix, $D_{n/2}$ being a diagonal matrix
+
+$$
+\hat{f} = \begin{bmatrix} I_{512} & D_{512} \\ I_{512} & -D_{512} \end{bmatrix} \begin{bmatrix} F_{512} & 0 \\ 0 & F_{512} \end{bmatrix} \begin{bmatrix} f_{\text{even}} \\ f_{\text{odd}} \end{bmatrix}
+$$
+
+With $D_{n/2}$ being the diagonal matrix of the DFT matrix:
+
+$$
+D_{512} = \begin{bmatrix} 1 & 0 & 0 & ... & 0 \\ 0 & \omega & 0 & ... & 0 \\ 0 & 0 & \omega^2 & ... & 0 \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & 0 & ... & w^{511} \end{bmatrix}
+$$
+
+The $\begin{bmatrix} I_{512} & D_{512} \\ I_{512} & -D_{512} \end{bmatrix}$ matrix is diagonal. And $\begin{bmatrix} F_{512} & 0 \\ 0 & F_{512} \end{bmatrix}$ is half the cost of the DFT matrix. So essentially, if we rearrange the $f$ matrix, we can turn the DFT matrix into a product of 2 matrices that is much easier to compute.
+
+With the $F_{n/2}$, we can recursively do decompose those the same way as well, pulling out the even and odd indices of the $f_\text{even}$ and the even and odd indices of $f_\text{odd}$ (Say we have $f_\text{even} = \{ 0, 2, 4, 6\}$ and $f_\text{odd} = \{ 1, 3, 5, 7\}$, we can split it too 4 lists: $f_\text{even-even} = \{ 0, 4\}$, $f_\text{even-odd} = \{ 2, 6\}$, $f_\text{odd-even} = \{ 1, 5\}$, $f_\text{odd-odd} = \{ 3, 7\}$).
+
+This is why $n$ being a power of 2 is so useful, we can recursively break the $F_n$ matrix down.
+
+$$
+F_{1024} \rightarrow F_{512} \rightarrow ... \rightarrow F_4 \rightarrow F_2
+$$
+
