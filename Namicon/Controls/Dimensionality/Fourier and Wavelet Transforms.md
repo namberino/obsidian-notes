@@ -483,4 +483,6 @@ $$
 G(f) = \hat{f}_g(t, \omega) = \int_{-\infty}^{\infty} f(\tau) e^{-i\omega\tau} g(t - \tau) d\tau
 $$
 
-The Gabor transform of $f$ is basically the Fourier transform of $f$, $\int_{-\infty}^{\infty} f(\tau) e^{-i\omega\tau}$, but weighted by the Gaussian window, $g(t - \tau)$, sliding across. This will give us some resolution of what frequencies are active and some resolution of when those frequencies are active in time. 
+The Gabor transform of $f$ is basically the Fourier transform of $f$, $\int_{-\infty}^{\infty} f(\tau) e^{-i\omega\tau}$, but weighted by the Gaussian window, $g(t - \tau)$, sliding across. This will give us some resolution of what frequencies are active and some resolution of when those frequencies are active in time.
+
+> Fun fact: This is how Shazam and Google Assistant classifies music. They try to find the peaks in the power spectrum and they try to match that sparse template of peaks in time to a library of known songs.
