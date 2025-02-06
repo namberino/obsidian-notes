@@ -427,3 +427,6 @@ $$
 F_{1024} \rightarrow F_{512} \rightarrow ... \rightarrow F_4 \rightarrow F_2
 $$
 
+The FFT is based on the fact that the DFT matrix has so much symmetry that if we just organize the $f$ data vector, we can recursively decompose the DFT matrix into smaller matrices.
+
+**IMPORTANT**: Even if our data is not a power of 2, it would still be cheaper to add a bunch of 0 paddings to the data until $n$ is a power of 2 than to calculate the DFT matrix directly.
