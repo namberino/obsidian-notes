@@ -376,7 +376,7 @@ $$
 \{f_0, f_1, ..., f_{n-1}\} \xrightarrow{DFT} \{\hat{f}_0, \hat{f}_1, ..., \hat{f}_{n-1}\}
 $$
 
-The $\hat{f}_n$ tell us how much of each frequencies to add up to recover $f$.
+The $\hat{f}_n$ tell us how much of each frequencies of sines and cosines along with their phase to add up to recover $f$.
 
 The exponential $e^{-i2\pi / n}$ is defined as $\omega_n$, which is some fundamental frequency that's related to what kinds of sines and cosines we can approximate with $n$ discrete values in a domain $x$.
 
@@ -430,3 +430,57 @@ $$
 The FFT is based on the fact that the DFT matrix has so much symmetry that if we just organize the $f$ data vector, we can recursively decompose the DFT matrix into smaller matrices.
 
 **IMPORTANT**: Even if our data is not a power of 2, it would still be cheaper to add a bunch of 0 paddings to the data until $n$ is a power of 2 than to calculate the DFT matrix directly.
+
+# Spectral derivative 
+
+For the FFT spectral derivative, we need to take the FFT of the derivative of $f$. And the FFT of a derivative will result in $i$ times the frequency times the FFT of $f$:
+
+$$
+\mathfrak{F}(\frac{df}{dx}) = i \kappa \mathfrak{F}(f) = i \kappa \hat{f}
+$$
+
+$\hat{f}$ is a vector of Fourier coefficients and $\kappa$ is a vector of frequencies. So multiplying the 2 vectors will give us the frequency-weighted Fourier coefficients. If we inverse Fourier transform that vector, we would recover the derivative of the function for those discrete sample points.
+
+$$
+\mathfrak{F}(\frac{df}{dx}) = i \begin{bmatrix} \kappa_1 \hat{f}_1 \\ \kappa_2 \hat{f}_2 \\ \vdots \\ \kappa_n \hat{f}_n \end{bmatrix}
+$$
+
+$\kappa$ is constructed similar to $\omega$ with the fundamental frequency $\frac{2 \pi}{L}$ and the vector $\vec{k}$ from $-n/2$ to $n/2$, so a vector of frequencies from $-n/2$ to $n/2$ with those fundamental units (this is called *harmonics*). We also need to be careful when organizing the frequencies in $\kappa$.
+
+$$
+\kappa = \frac{2\pi}{L} k
+$$
+
+> Note: $\kappa$ for spatial frequencies, used when transforming in space (wave numbers), $\omega$ for temporal frequencies, used when transforming in time. They play the same role, just with different names.
+
+# Solving PDEs with the FFT
+
+We can solve the PDEs with FFT as a big system of ODEs, numerically speaking. We can take $u$, the state of our system, then discretize it on a spatial grid. Then we advance $u$ using an ODE integrator like Runge-Kutta. We can approximate the derivatives in the PDE accurately and efficiently using the FFT.
+
+We can also use the FFT to transform the initial conditions of the PDE, then simulate the system evolution in time in the Fourier frequency domain. After we're done simulating, we transform the evolution back into the spatial domain using the inverse FFT for plotting or other purposes. At least in the case of a linear PDE, we can do this.
+
+![](./Assets/fft-pde-solve-u-diagram.png)
+
+TL;DR: We can approximate the derivatives using the FFT then advance the system through time.
+
+# Gabor transform and the spectrogram
+
+Say we have some time series data, like an audio recording. If we Fourier transform that signal, it will translate that signal into the frequency domain with units of $Hz$. The spikes in the frequency domain (also called the power spectrum) corresponds to individual tones in the audio recording.
+
+![](./Assets/time-series-fourier-transform-diagram.png)
+
+With the time series data, we have very precise information about where in time we are but we don't know what the frequency is at that instance in time. Similarly, in the Fourier transform domain, we have precise information about frequencies is present in the data, but we don't know when the frequency is used.
+
+The Gabor transform allows us to compute the spectrogram. The spectrogram is a time-frequency plot of what frequencies are active in specific instances in time. We can pull out both the temporal information and the frequency content of the data.
+
+The Fourier transform is really good for signals that are periodic. Audio signals is not like that, it's non-periodic. 
+
+With the Gabor transform, instead of performing the Fourier transform on the entire temporal domain, we take a fixed-width Gaussian window and we convolve the Fourier transform with the Gaussian window sliding across the signal. This gives us a spectrogram, which is kinda like a hybrid between the 2 graphs above. We can't have as much frequency resolution as the time series graph or as much time resolution as the Fourier frequency graph.
+
+The Gabor transform is built on the Fourier transform. Say we have a function $f$. The Gabor transform is given by this:
+
+$$
+G(f) = \hat{f}_g(t, \omega) = \int_{-\infty}^{\infty} f(\tau) e^{-i\omega\tau} g(t - \tau) d\tau
+$$
+
+The Gabor transform of $f$ is basically the Fourier transform of $f$, $\int_{-\infty}^{\infty} f(\tau) e^{-i\omega\tau}$, but weighted by the Gaussian window, $g(t - \tau)$, sliding across. This will give us some resolution of what frequencies are active and some resolution of when those frequencies are active in time. 
