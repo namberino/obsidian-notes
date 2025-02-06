@@ -483,6 +483,61 @@ $$
 G(f) = \hat{f}_g(t, \omega) = \int_{-\infty}^{\infty} f(\tau) e^{-i\omega\tau} g(t - \tau) d\tau
 $$
 
-The Gabor transform of $f$ is basically the Fourier transform of $f$, $\int_{-\infty}^{\infty} f(\tau) e^{-i\omega\tau}$, but weighted by the Gaussian window, $g(t - \tau)$, sliding across. This will give us some resolution of what frequencies are active and some resolution of when those frequencies are active in time.
+The Gabor transform of $f$ is basically the Fourier transform of $f$, $\int_{-\infty}^{\infty} f(\tau) e^{-i\omega\tau}$, but weighted by the Gaussian window, $g(t - \tau)$, sliding across (Short Time Fourier Transform - STFT). This will give us some resolution of what frequencies are active and some resolution of when those frequencies are active in time.
 
 > Fun fact: This is how Shazam and Google Assistant classifies music. They try to find the peaks in the power spectrum and they try to match that sparse template of peaks in time to a library of known songs.
+
+We can also take the spectrogram and take the SVD of it to get the "eigen-sounds".
+
+# Uncertainty principles
+
+In time-frequency analysis, there is a fundamental uncertainty principle that limits the ability to simultaneously attain high resolution in both the time and frequency domains. The spectrogram resolves both time and frequency information, but with lower resolution in each domain.
+
+$$
+\biggr( \int_{-\infty}^{\infty} x^2 |f(x)|^2 dx \biggl) \biggr( \int_{-\infty}^{\infty} \omega^2 |\hat{f}(\omega)|^2 d\omega \biggl) \ge \frac{1}{16\pi^2}
+$$
+
+If we try to localize where we are in space or time (think of $f(x)$ as a Gaussian kernel that we're trying to make tighter and tighter), this would give us a lot of resolution and allow us to know exactly where we are in space or time. However, this would mean that the frequency space would be more spread out since $\hat{f}(\omega)$ is also a Gaussian, and vice versa.
+
+The spectrogram is the balance of the 2, giving us both information on the space/time and the frequency, but at a lower resolution.
+
+# Wavelets and multi-resolution analysis
+
+Wavelets is kinda like a supercharged Fourier transform. Wavelets is used a lot for image and audio compression.
+
+The wavelets transform (also called multi-resolution analysis) gives us multiple scales in time and frequency. It's kinda like an enhanced spectrogram.
+
+![](./Assets/multi-resolution-analysis-grid-diagram.png)
+
+We have this hierarchical gridding of time information and frequency information. Low frequencies tend to last for a long time and don't change much over time. The lowest grid in the graph shows the lowest frequencies. The next 2 grid above shows more resolution in time with less frequency resolution. Next level shows more resolution in time and less resolution in frequency, etc.
+
+The main idea for the wavelets decomposition is for lower frequencies, we don't need as much temporal accuracy, for higher frequencies, we get more temporal accuracy, but also more uncertainty in exactly what frequency is turning on or off at that range in time.
+
+The wavelets decomposition is similar to the Fourier decomposition and the Gabor transform, we take some time series or temporal data and project it onto an orthogonal basis. However, in the wavelets transform, the orthogonal basis is not going to be just sines and cosines, it's going to be a hierarchy of orthogonal functions that will get smaller in time or space.
+
+We start with a mother wavelet $\psi(t)$. From the mother wavelet, we can derive the smaller wavelets:
+
+$$
+\psi_{a, b} (t) = \frac{1}{\sqrt{a}}\psi \biggr(\frac{t-b}{a}\biggl)
+$$
+
+The parameters $a$ and $b$ are responsible for scaling and translating the function $\psi$, respectively. So we can imagine if $\psi$ was a Gaussian, $b$ will slide the Gaussian left or right in time, pick which window in time to be in, $a$ will scale the wavelet to be bigger or smaller, making us going up a level in the hierarchy (because the higher up in the hierarchy, the smaller the window) and making the window smaller.
+
+Below is the description of the wavelets transform with respect to the mother wavelet $\psi$.
+
+$$
+\mathfrak{W}_{\psi}(f)(a,b) = \langle f(t), \psi_{a, b} (t) \rangle = \int_{-\infty}^{\infty} f(t) \overline{\psi}_{a, b}(t) dt
+$$
+
+Example: The Haar wavelet
+
+The mother wavelet of the Haar wavelet is just a function that starts at 1 and then it goes down to negative 1 over the whole interval. So the mother wavelet is $\psi_{1, 0}$, scaled by 1 (unchanging), shifted by 0 (no shifting). From this mother wavelet, we can build smaller wavelets, say 2 wavelets, 1 going from 1 to -1 only on the left half of the interval $\psi_{1/2, 0}$, and 1 going from 1 to -1 only on the right half of the interval $\psi_{1/2, 1/2}$.
+
+All of these functions, the mother wavelet function and the children wavelet functions, are all orthogonal. If we take the inner product between any 2 arbitrary function in this function space, we would get 0. This is because we're taking the shape of the mother wavelet and shrinking it down in halves. If the mother wavelet's shape sums up to 0 then we get this orthogonal decomposition.
+
+The mother wavelet will pull out big structures of a signal, the smaller wavelets will pull out smaller structures in different portions of the signal.
+
+> Note: There are a lot of different mother wavelets to choose from: Haar, Daubechies, Mexican hat, Coiflet, etc.
+
+# Image compression with the FFT
+
