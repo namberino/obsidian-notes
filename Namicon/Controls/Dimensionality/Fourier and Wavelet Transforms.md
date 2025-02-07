@@ -541,3 +541,22 @@ The mother wavelet will pull out big structures of a signal, the smaller wavelet
 
 # Image compression with the FFT
 
+The FFT that we use here is a 2D FFT for 2D images.
+
+A 2D FFT is very simple: We take the FFT of every row, then take the FFT of that output. If we take the FFT of the column first then we do the row second. That's how we take a 2D FFT.
+
+The 2D FFT of an image will usually show an plus sign in the middle, then some stuff everywhere else. We can think of the Fourier coefficients in the final output to be a particular wave numbers that corresponds to some $\cos(kx) \sin(jy)$ with $k$ being the width coordinate and $j$ being the height coordinate. Every single point in the output matrix has an $x$ frequency and a $y$ frequency.
+
+When we have our image, say a 1 megapixel image, we'll first run the 2D FFT on it and get an output of Fourier coefficients matrix with 1 million coefficients. For almost all natural images, when we Fourier transform them, most of the Fourier coefficients are very small. We can truncate them so this large number of Fourier coefficients is reduced. We do this by thresholding and keeping around $1\%$ or $2\%$ of the largest coefficients. When we inverse 2D FFT this truncated Fourier coefficients matrix, we'll get the original image with not a lot of details lost.
+
+The truncated coefficients will be just a list of a bunch of these Fourier coefficients at $j$ and $k$:
+
+$$
+\begin{bmatrix}
+j, k, \hat{f}
+\\
+j, k, \hat{f}
+\\
+\vdots
+\end{bmatrix}
+$$
