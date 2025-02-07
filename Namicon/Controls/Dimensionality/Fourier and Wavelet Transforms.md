@@ -633,9 +633,108 @@ $$
 \begin{aligned}
 \bar{f}(s) &= \mathfrak{L}(f(t)) =  \int_{0}^{\infty} f(t) e^{-s t} dt
 \\
-f(t) &= \mathfrak{L}(\overline{f}(s)) = \frac{1}{2\pi i} \int_{\gamma - i\infty}^{\gamma + i\infty} \overline{f}(s) e^{s t} ds
+f(t) &= \mathfrak{L}^{-1}(\overline{f}(s)) = \frac{1}{2\pi i} \int_{\gamma - i\infty}^{\gamma + i\infty} \overline{f}(s) e^{s t} ds
 \end{aligned}
 $$
 
 Recap: If we have a function that can't easily be Fourier transformed, we can use the Laplace transform. We multiply the function by a stable decaying exponential so the function decays to 0 with a Heaviside function so it doesn't blow up at $-\infty$, then we use the Fourier transform.
 
+# Laplace transforming derivatives
+
+$$
+\mathfrak{L}\biggr(\frac{df}{dt}\biggl) = \int_0^{\infty} \frac{df}{dt} e^{-st} dt
+$$
+
+With the $f'(t)$ term being $dv$ and $e^{-st}$ term being $u$, we can use the chain rule. With $e^{-st} f(t)$ being $uv$, $f(t)$ being $v$, and $-se^{-st}$ being $du$, we have:
+
+$$
+\begin{aligned}
+\mathfrak{L}\biggr(\frac{df}{dt}\biggl) &= [e^{-st} f(t)]^{\infty}_0 - \int_{0}^{\infty} f(t) (-se^{-st})dt
+\\
+&= [e^{-st} f(t)]^{\infty}_0 + s \int_{0}^{\infty} f(t) e^{-st}dt
+\\
+&= -f(0) + s\overline{f}(s)
+\end{aligned}
+$$
+
+The $−f (0)$ term comes from $[e^{-st} f(t)]^{\infty}_0$ since $e^{-st}$ is 0 at $t = \infty$ and 1 at $t = 0$.
+
+For higher order derivatives, we can add onto the original Laplace transform of a derivative of $f$ to get a polynomial, with $f^{(k)}$ denoting the $kth$ derivative.
+
+$$
+\mathfrak{L}\biggr(\frac{d^nf}{dt^n}\biggl) = s^n\overline{f}(s) - f^{(n-1)}(0) - sf^{(n-2)}(0) -... -s^{n-1}f(0)
+$$
+
+We can also Laplace transform the convolution integral:
+
+$$
+\mathfrak{L}(f(t) * g(t)) = \mathfrak{L}(f(t)) \mathfrak{L}(g(t)) = \overline{f}(s) \overline{g}(s)
+$$
+
+> Note: Laplace transform of convolution integral is how we handle transfer functions in control theory.
+
+> Note: Inverse Laplace transform is more complicated than the forward Laplace transform.
+
+# Turning ODEs into algebraic equations
+
+2nd order ODE (just Newton's 2nd law of motion):
+
+$$
+\ddot{x} + \frac{c}{m} \dot{x} + \frac{k}{m} x = 0
+$$
+
+Assuming $\frac{c}{m} = 5$ and $\frac{k}{m} = 4$:
+
+$$
+\ddot{x} + 5 \dot{x} + 4 x = 0
+$$
+
+And assuming the initial condition $x(0) = 2$ and $\dot{x}(0) = -5$, the eigenvalues of this system will determine how this system responds to the initial condition.
+
+$$
+\begin{aligned}
+&\mathfrak{L}(\ddot{x}) = s^2 \overline{x} - s x(0) - \dot{x}(0)
+\\
+&5\mathfrak{L}(\dot{x}) = 5(s\overline{x} - x(0))
+\\
+&4\mathfrak{L}(x) = 4\overline{x}
+\end{aligned}
+$$
+
+So we have this equation:
+
+$$
+s^2 \overline{x} - s x(0) - \dot{x}(0) + 5(s\overline{x} - x(0)) + 4\overline{x} = 0
+$$
+
+Now our equation doesn't have any derivatives. We now have a polynomial in $s$.
+
+Solution:
+
+$$
+\begin{aligned}
+&(s^2 +5s + 4)\overline{x}(s) = 2s - 5 + 10 = 2s + 5
+\\
+&
+\end{aligned}
+$$
+
+The right hand side is the initial condition of the system. The polynomial term becomes the characteristic polynomial of the ODE. Now we need to solve for $\overline{x}$ and inverse Laplace transform.
+
+$$
+\begin{aligned}
+\overline{x} (s) &= \frac{2s+5}{s^2+5s+4} = \frac{2s+5}{(s+4)(s+1)}
+\\
+&= \frac{1}{s + 4} + \frac{1}{s + 1}
+\end{aligned}
+$$
+
+Now we can inverse Laplace transform $\overline{x}(s)$. We know that $\mathfrak{L}(e^{at}) = \frac{1}{s - a}$, so:
+
+$$
+\begin{aligned}
+x(t) &= \mathfrak{L}^{-1}(\overline{x}(s)) = \mathfrak{L}^{-1}\biggr(\frac{1}{s + 4}\biggl) \mathfrak{L}^{-1}\biggr(\frac{1}{s + 1}\biggl)
+\\
+&= e^{-4t} e^{-t}
+\end{aligned}
+$$
