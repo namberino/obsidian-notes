@@ -560,3 +560,82 @@ j, k, \hat{f}
 \vdots
 \end{bmatrix}
 $$
+
+# The Laplace transform
+
+The Laplace transform allows us to take a PDE and turn it into an ODE, and an ODE and turn it into an algebraic equation. It's a generalized Fourier transform.
+
+The Fourier transform can be applied to functions that decay to 0 at $_-^+\infty$. For non-periodic functions that doesn't decay to 0 at $_-^+\infty$, we can't really apply the Fourier transform on those. For periodic functions that doesn't decay to 0 at $_-^+\infty$, we can take the Fourier transform of those by multiplying the function with a window $w$ and taking the limit of the multiplication as $w$ becomes infinitely large, so it's pretty cumbersome to do.
+
+The Laplace transform is basically a weighted, one-sided Fourier transform for these kinds of functions.
+
+We multiply $f(t)$ with $e^{-\gamma t}$ and the Heaviside function $H(t)$ so that $f(t) e^{-\gamma t} H(t) \rightarrow 0$ as $t \rightarrow \infty$. We're basically multiplying $f$ with some decaying exponential and $H(t)$ is for making sure our decaying exponential doesn't explode at $-\infty$.
+
+$$
+H(t) = \begin{cases} 0, t \le 0 \\ 1, t \gt 0\end{cases}
+$$
+
+With this Heaviside function, we can define the $F$ function:
+
+$$
+F(t) = f(t) e^{-\gamma t} H(t) = \begin{cases} 0, t\le 0 \\ f(t) e^{-\gamma t}, t \gt 0 \end{cases}
+$$
+
+With the function $F$, we can now Fourier transform it, giving us the Laplace transform of $f$.
+
+$$
+\begin{aligned}
+\hat{F}(\omega) &= \int_{-\infty}^{\infty} F(t) e^{-i\omega t} dt
+\\
+&= \int_{0}^{\infty} f(t) e^{-\gamma t} e^{-i\omega t} dt
+\\
+&= \int_{0}^{\infty} f(t) e^{-(\gamma + i\omega) t} dt
+\end{aligned}
+$$
+
+With $s = \gamma + i\omega$ being the Laplace variable, we have this Laplace transform:
+
+$$
+\hat{F}(\omega) = \int_{0}^{\infty} f(t) e^{-s t} dt
+$$
+
+The inverse Laplace transform is the inverse Fourier transform of $\hat{F}(\omega)$.
+
+$$
+F(t) = \frac{1}{2\pi} \int_{-\infty}^{\infty} \hat{F}(\omega) e^{i\omega t} d\omega
+$$
+
+Because $F(t) = f(t) e^{-\gamma t} H(t)$, we just have to remove the exponential term to recover the $f$ function:
+
+$$
+\begin{aligned}
+f(t) = e^{\gamma t} F(t) &= \frac{1}{2\pi} \int_{-\infty}^{\infty} e^{\gamma t} \hat{F}(\omega) e^{i\omega t} d\omega
+\\
+&= \frac{1}{2\pi} \int_{-\infty}^{\infty} \hat{F}(\omega) e^{(\gamma + i\omega) t} d\omega
+\\
+&= \frac{1}{2\pi} \int_{-\infty}^{\infty} \overline{f}(s) e^{(\gamma + i\omega) t} d\omega
+\end{aligned}
+$$
+
+Because $s = \gamma + i\omega$, we can change the integration be with respect to $s$. With $ds = id\omega$, so $d\omega = \frac{1}{i} ds$.
+
+$$
+\begin{aligned}
+f(t) &= \frac{1}{2\pi} \int_{-\infty}^{\infty} \overline{f}(s) e^{(\gamma + i\omega) t} d\omega
+\\
+&= \frac{1}{2\pi i} \int_{\gamma - i\infty}^{\gamma + i\infty} \overline{f}(s) e^{s t} ds
+\end{aligned}
+$$
+
+Laplace transform pair:
+
+$$
+\begin{aligned}
+\bar{f}(s) &= \mathfrak{L}(f(t)) =  \int_{0}^{\infty} f(t) e^{-s t} dt
+\\
+f(t) &= \mathfrak{L}(\overline{f}(s)) = \frac{1}{2\pi i} \int_{\gamma - i\infty}^{\gamma + i\infty} \overline{f}(s) e^{s t} ds
+\end{aligned}
+$$
+
+Recap: If we have a function that can't easily be Fourier transformed, we can use the Laplace transform. We multiply the function by a stable decaying exponential so the function decays to 0 with a Heaviside function so it doesn't blow up at $-\infty$, then we use the Fourier transform.
+
