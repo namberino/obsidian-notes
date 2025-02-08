@@ -22,7 +22,7 @@ y &= C x
 \\
 &= C \psi s
 \\
-&= \Theta
+&= \Theta s
 \end{aligned}
 $$
 
@@ -31,4 +31,22 @@ $y$ is the measurement with much fewer entries than $x$. The amount of measureme
 The goal of compressed sensing is given some measurement of a signal $y$, we need to solves for $s$ so that it's consistent with $y$, then use $s$ to approximate $x$.
 
 > Note: This system of equation has infinitely many solutions.
+
+![](./Assets/compressed-sensing-matrices-fourier-basis.png)
+
+This system of equations is underdetermined. Out of the infinite solutions of $s$, we want to find the sparsest solution that is the Fourier coefficients of the signal. This problem is called the underdetermined inverse problem.
+
+An optimization for this problem is the below equation. We want the $\min|| C \psi s - y ||_2$ to be as close to 0 as possible, there are infinitely many $s$ that satisfies this condition. We also have a penalty term with the number $\lambda$ telling us how important the term $|| s ||_1$ is. That term promotes solutions in the system with as many zero entries as possible. We're minimizing the error in the fit with $C$, $\psi$, and $y$ known and solve for $s$ such that $s$ has the minimum 1-norm.
+
+$$
+\min|| C \psi s - y ||_2 + \lambda || s ||_1
+$$
+
+![](./Assets/compressed-sensing-penalty-term-visual.png)
+
+This solves the problem in a convex optimization. Another way of writing this would be constraining the $l1$ norm of $s$ to some constraints with $\epsilon$ being a threshold value:
+
+$$
+\min || s ||_1 \text{ such that } || C \psi s -y ||_2 < \epsilon
+$$
 
