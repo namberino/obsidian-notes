@@ -76,5 +76,8 @@ The Shannon-Nyquist theorem can be applied perfectly to broadband signals (dense
 
 If we have signals that are not broadband or dense and we have a low average sampling rate (well below the Nyquist rate), we can measure the signal randomly. With the random measurements, we can fatefully reconstruct the sparse vector in the PSD, the inverse Fourier transform to reconstruct the signal with no aliasing. This is compressive sampling.
 
-# The L1 norm
+# Geometry of compression
 
+![](./Assets/different-l-norms-geometric-representation.png)
+
+The L0 norm solution for compressed sensing solves for the sparsest $s$ that satisfies $y$. However, L0 is an NP-hard problem. So what we do is we solve the L1 norm instead, which is computable. This analogy works even better in higher and higher dimensions.
