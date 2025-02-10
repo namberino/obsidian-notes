@@ -50,3 +50,31 @@ $$
 \min || s ||_1 \text{ such that } || C \psi s -y ||_2 < \epsilon
 $$
 
+# Shannon-Nyquist sampling theorem
+
+A function containing no frequency higher than $\omega$Hz is completely determined by sampling at strictly greater than $2\omega$Hz. What this mean is to resolve all frequencies in a function, it must be sampled at twice the highest frequency present.
+
+If we are sampling and there's a highest frequency in Hz that we care about, we'd have to sample at twice that highest frequency. This is sampling rate is the Nyquist rate (measured in seconds):
+
+$$
+\Delta t = \frac{1}{2\omega}
+$$
+
+> Fun fact: This is why audio recordings are sampled at 44kHz. Humans can hear at around 20kHz, so according to the Shannon-Nyquist theorem, we have to sample a 20kHz signal at twice its highest frequency to perfectly capture it, hence 44kHz (the extra 4kHz is for filtering and anti-aliasing purposes).
+
+Say we have a sinusoidal signal, we might say that to capture the signal, we'd need get 2 measurements per period to get the highest point and lowest point. If we down-sampled this frequency and measure the frequency less frequently, we'd get some measurements that could be represented by a lower-frequency signal. If we don't measure at the Nyquist rate, we wouldn't be able to capture the full signal. A worse case than this is sampling the signal at a rate of $\omega$, so we're only capturing the peak of the signal. If we try to deduce a signal from those measurement points, we'd just get a constant straight signal line.
+
+![](./Assets/shannon-nyquist-sampling-rates-illustration.png)
+
+This phenomenon is called *aliasing*, which says that as far as the sampling is concerned, the different signal curves are aliases of one another, they might as well be the same thing as far as the measurements are concerned.
+
+When we measure the signal at $\omega$, it's only going to look like we measured a system with half the frequency of $\omega$. With the measurement $\omega$, we can't really tell apart the true signal and the alias signal.
+
+![](./Assets/psd-shannon-nyquist-sampling-rate-example.png)
+
+The Shannon-Nyquist theorem can be applied perfectly to broadband signals (dense signals with frequency content from low frequencies to high frequencies). However, for signals that are not broadband or dense, we can, sometimes, under some conditions, beat the Shannon-Nyquist theorem.
+
+If we have signals that are not broadband or dense and we have a low average sampling rate (well below the Nyquist rate), we can measure the signal randomly. With the random measurements, we can fatefully reconstruct the sparse vector in the PSD, the inverse Fourier transform to reconstruct the signal with no aliasing. This is compressive sampling.
+
+# The L1 norm
+
