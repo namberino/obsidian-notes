@@ -50,6 +50,8 @@ $$
 \min || s ||_1 \text{ such that } || C \psi s -y ||_2 < \epsilon
 $$
 
+$C$ should be incoherent with respect to $\psi$, meaning it cannot be too parallel to $\psi$, it needs to be relatively random. The vector $s$ is k-sparse if it has k non-zero entries. The number of measurements $p$ needs to be proportional to $k_1 k \log(n / k)$, with $k_1$ being the incoherence between $C$ and $\psi$. If those conditions are satisfied, $C\psi$ will act like a unitary matrix, preserving the geometry of the vector $s$. It's very expensive to solve for $s$. You only want to use this in applications where measuring the full $x$ vector is very expensive. An example is infant MRI.
+
 # Shannon-Nyquist sampling theorem
 
 A function containing no frequency higher than $\omega$Hz is completely determined by sampling at strictly greater than $2\omega$Hz. What this mean is to resolve all frequencies in a function, it must be sampled at twice the highest frequency present.
@@ -81,3 +83,88 @@ If we have signals that are not broadband or dense and we have a low average sam
 ![](./Assets/different-l-norms-geometric-representation.png)
 
 The L0 norm solution for compressed sensing solves for the sparsest $s$ that satisfies $y$. However, L0 is an NP-hard problem. So what we do is we solve the L1 norm instead, which is computable. This analogy works even better in higher and higher dimensions.
+
+# Robust regression
+
+L2 norm has been used for solving overdetermined and underdetermined systems a long time in the engineering and science circle. It's easy to compute, easy to prove results, and it's fast and accurate. With compressed sensing, we now see that L1 norm also has a very important role in modern statistics and modern data processing.
+
+Let's take a linear regression example. We have some input $x$ with some output $b$ with some distribution and we have a linear fit $ax = b$. We know $x$ and $b$ for all data points, we're solving for the slope $a$. This regression problem is often solved with least-squares (L2).
+
+$$
+a \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix} = \begin{bmatrix} b_1 \\ b_2 \\ \vdots \\ b_n \end{bmatrix}
+$$
+
+Because there's noise in the data, this doesn't perfectly model the real world data measurements. We need to find an $a$ that minimizes the sum of the square of the error.
+
+$$
+a \text{ such that} \min(|| ax - b ||_2)
+$$
+
+This has a problem. If we have some outlier data points that deviates from the distribution completely (maybe because of some outside factor like machine broke that day), we'd knock our fit off of the distribution.
+
+The L2 norm used in least-squares is basically the square root of the sum of each error squared ($|| \cdot ||_2 = \sqrt{\sum_j \epsilon_j^2}$), so each data point has a lot of influence on the fit. The square error for the outlier is so much larger compared to the other data points because the least-squares penalizes the distance error a lot.
+
+A solution to this is using the L1 norm instead of the L2 norm. The L1 norm is the sum of each error ($|| \cdot || = \sum_j |\epsilon_j|$). This will put the fit much closes to the true distribution. The L1 norm fit is *robust* to big measurement errors.
+
+# Least Absolute Shrinkage and Selection Operator (LASSO)
+
+LASSO allows us to build models that is interpretable with as few descriptive factors as possible.
+
+For a regression problem, if we have an overdetermined system, there might not even be a small $x$ that satisfies $b = Ax$ where $A$ is a matrix and $b$ has more elements than $x$. If we have an underdetermined system, there would be infinitely many $x$ that satisfies the condition. A lot of regression problems boil down to how to choose $x$ so that it's relevant and interpretable for the problem.
+
+Say the $b$ elements describe the probability that a person would get a certain disease or some health outcome. The columns of $A$ would be the descriptive features for each of the person like age, height, BP, which pet they have, etc. Some features will be irrelevant to the thing we're trying to predict.
+
+A simple loss function $L$ would be defined with the L2 norm:
+
+$$
+L = || Ax - b ||_2
+$$
+
+And we want to find $x$ so that minimizes the loss function
+
+$$
+\text{argmin}_x L(x)
+$$
+
+When we use this L2 loss function, the $x$ vector will be dense with no zero values, not sparse. This means the regression takes in to account all the factors, marking them all as important. We want $x$ to be sparse if some of the factors in the model shouldn't have much influence on the result.
+
+Ridge regression (Tikhonov regularization):
+
+$$
+L = || Ax - b ||_2 + \alpha || x ||_2
+$$
+
+For many of the regression problem, even if it's underdetermined, the columns in the $A$ matrix might still be parallel or nearly linearly dependent. For example, BP, white cell count, calcium, etc, might be closely related as they are health related factors. A matrix with linearly dependent columns is ill-conditioned. If we do least-squares on these kinds of matrices and we have some noise in $b$, the noise will be amplified and $x$ will have a bunch of really big values trying to cancel each other out to fit the noise.
+
+The ridge regression introduces the regularization factor $\alpha || x||_2$. This factor penalizes the model if $x$ has too large of a deviation. However, $x$ is still dense, it still needs all of the explanatory factors to describe the outcome.
+
+LASSO:
+
+$$
+L = || Ax - b ||_2 + \lambda || x ||_1
+$$
+
+LASSO is similar to ridge regression in spirit. Instead of an L2 norm on $x$, we use L1 norm as the L1 norm promotes sparsity. We still want to fit the model to the data as good as possible, but we also want $x$ to be as sparse as possible. It highlights only a few columns of $A$ that are most correlated with the desired outcome. The $\lambda$ value allows us to tune how sparse we want $x$ to be, $\lambda$ is inversely proportional to the sparsity of $x$.
+
+Note: If we accidentally kill a factor too early (at low $\lambda$ value), we're not getting that factor back as we keep increasing the $\lambda$ value.
+
+![](./Assets/lasso-path-visualization.png)
+
+For example, we want to predict the likelihood of a heart disease and we have a bunch of factors in $A$: age, blood pressure, heart rate, weight, height, calcium, etc. LASSO might pull out a few factors that best predicts the likelihood of a patient getting a heart disease: blood pressure, heart rate, smoking, etc.
+
+A model that uses fewer factor while achieving relatively the same efficiency is a better model. Sparsity also helps prevent overfitting.
+
+![](./Assets/cross-validated-mse-lasso-fit.png)
+
+As $\lambda$ decreases and adding more factors into the model, making the model more complex, the error will drop. At some level of complexity, the cross-validated error will actually start increasing because we're adding in terms that doesn't have much correlation with our desired output.
+
+Elastic net:
+
+$$
+L = || Ax - b ||_2 + \lambda || x ||_1 + \alpha || x ||_2
+$$
+
+This is a combination of LASSO and ridge regression. It balances both sparsity and noise reduction. Elastic net is also closely related to SVM.
+
+![](./Assets/lasso-vs-ridge-visualization-sparsity.png)
+
