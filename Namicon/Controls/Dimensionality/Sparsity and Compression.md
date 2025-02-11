@@ -228,5 +228,31 @@ $$
 X = L + S
 $$
 
-Where $X$ is the distribution of the data with the outliers, $L$ is the true distribution of the data, and $S$ is the outliers.
+Where $X$ is the distribution of the data with the outliers, $L$ is the low-rank matrix describing true distribution of the data and itself is well described with principal components, and $S$ is the sparse matrix representing the outliers.
 
+This is an ill-conditioned and underdetermined problem with infinitely many solutions. We can solve these kinds of problem if we use the L1 regularization norm.
+
+$$
+\min_{LS} \text{rank}(L) + || S ||_0 \text{ such that } L + S = X
+$$
+
+We can't really solve this computationally as both $\text{rank}(L)$ and $||S||_0$ are non-convex. What we can do is "relax the convex". We introduce proxies to these norms that are easier to work with. The proxy for $\text{rank}()$ is the nuclear norm (sum of singular values) and the proxy for sparsity is the L1 norm and $\lambda = 1 / \sqrt{\max(n,m)}$. With high probability, the result of this is a low-rank $L$ and a sparse $S$.
+
+$$
+\min_{LS} ||L||_* + \lambda || S ||_1 \text{ such that } L + S = X
+$$
+
+The convex problem is known as the principal component pursuit (PCP) and can be solved using the augmented Lagrange multiplier (ALM) algorithm.
+
+$$
+\mathfrak{L}(L, S, Y) = ||L||_* + \lambda ||S||_1 + \langle Y, X - L - S \rangle + \frac{\mu}{2} ||X - L - S||_F^2
+$$
+
+A general solution would solve for the $L_k$ and $S_k$ that minimize $L$, update the Lagrange multipliers $Y_{k+1} = Y_k + \mu(X − L_k − S_k)$, and iterate until the solution converges. However, for this specific system, the alternating directions method ([ADM](https://optimization-online.org/wp-content/uploads/2009/11/2447.pdf)) provides a simple procedure to find $L$ and $S$.
+
+Alternating Directions Method (ADM):
+1. Construct shrinkage operator: $S_{\tau}(x) = \text{sign}(x) \max(|x| - \tau, 0)$
+2. Construct Singular Value Threshold (SVT) operator: $\text{SVT}_{\tau}(X) = U S_{\tau} (\Sigma) V^*$
+3. Use the $S_{\tau}$ and $SVT$ operators iteratively to solve for $L$ and $S$
+
+We can often apply this to high-dimensional data as they often have low-dimensional principal components. With PCA, we can decompose the data into several principal components that best approximates the data. With RPCA, we can decompose a super noisy or corrupted data into an approximation of the data and the corruption or noise.
