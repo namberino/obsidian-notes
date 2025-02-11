@@ -168,3 +168,31 @@ This is a combination of LASSO and ridge regression. It balances both sparsity a
 
 ![](./Assets/lasso-vs-ridge-visualization-sparsity.png)
 
+> Note: [SR3](https://arxiv.org/pdf/1807.05411) (Sparse Relaxed Regularized Regression) is pretty good for solving the LASSO path breaking down problem. It can also improve many sparse algorithms.
+
+An example usage of LASSO is in *SINDy* (Sparse Identification of Nonlinear Dynamics). Take the Lorenz equation for example:
+
+$$
+\begin{aligned}
+&\dot{x} = \sigma (x - y)
+\\
+&\dot{y} = x (\rho - z) - y
+\\
+&\dot{z} = xz - \beta z
+\end{aligned}
+$$
+
+If we have data from a simulation with measurements from the system's state, we can build a library of candidate terms $\Theta(X)$ that could be in the right hand side of the system of equations. Now we want to find the fewest columns of the matrix that add up to describe the measurements data. This allows us to discover the dynamical system that generated the measurement data.
+
+$$
+|| \dot{X} - \Theta(X) \Xi || + \lambda || \Xi ||_0
+$$
+
+With $\dot{X}$ being $b$, $A$ is $\Theta(X)$, and $x$ is $\Xi$. We're trying to find the sparsest $\Xi$ that describes the measurements $\dot{X}$.
+
+> Note: This system has a known solution. This technique can be applied to system with unknown solutions too.
+
+![](./Assets/lorenz-system-lasso-application.png)
+
+> Note: $\lambda$ being too low will lead to underfitting, $\lambda$ being too high will lead to the least-squares solution, which might be overfitting. A good model needs to balance between the complexity and the cross-validated error.
+
