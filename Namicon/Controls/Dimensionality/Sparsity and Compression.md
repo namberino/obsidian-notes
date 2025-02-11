@@ -196,3 +196,16 @@ With $\dot{X}$ being $b$, $A$ is $\Theta(X)$, and $x$ is $\Xi$. We're trying to 
 
 > Note: $\lambda$ being too low will lead to underfitting, $\lambda$ being too high will lead to the least-squares solution, which might be overfitting. A good model needs to balance between the complexity and the cross-validated error.
 
+# Sparse Representation for Classification (SRC)
+
+We have an image of a person. First thing we do is downsample that image and stack that as a vector. This process is repeated for all images in a large image library.
+
+With the downsampled image, we can now use sparse regression because this is now an underdetermined problem (as the number of elements in the downsampled vector is less than the number of columns in the image library matrix)
+
+The goal is to find a coefficient vector to be as sparse as possible so that when we transform the vector with the matrix, we get the image.
+
+Now we go person by person in the coefficient and only using the coefficients corresponding to a specific part of the library, how much error would we have in approximating the image. The below graphs show an example image being approximated as person 7.
+
+![](./Assets/sparse-representation-approximate-image.png)
+
+We can even add noise into the person's image and still be able to classify the person correctly, despite having higher error.
