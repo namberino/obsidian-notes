@@ -209,3 +209,24 @@ Now we go person by person in the coefficient and only using the coefficients co
 ![](./Assets/sparse-representation-approximate-image.png)
 
 We can even add noise into the person's image and still be able to classify the person correctly, despite having higher error.
+
+# Robust PCA (RPCA)
+
+Say we have an image of a person who's face is occluded. Can we decompose the image into the person's face and the object that's obstructing the view of the person's face? In many cases, we can do it.
+
+RPCA is a powerful algorithm that allows us to do this decomposition. This should be the PCA algorithm that you use on a day-to-day basis.
+
+The idea of robustness in PCA was carried over from robust regression. Let's say we have some data with a Gaussian distribution and an outlier data point. 
+
+![[rpca-gaussian-distributed-example.png]]
+
+The true distribution is a Gaussian distribution. When we do standard PCA on this, the principle components will get skewed by the outlier. PCA can handle a small amount of white noise, but outliers and corruptions outside of the distribution will completely skew with it. RPCA will take the outliers into account by decomposing the data into a true distribution matrix and an outliers matrix, allowing us to fit the PCA better with the true distribution.
+
+We can't decompose the data without a large library of what the true distribution should look like. Going with a human face image example, we can't do RPCA if we don't have a large library of images of human face for the model to learn how a human face look like. The idea is that even if we set half the image's pixel values to some outlier value like fully black, because of the statistics of the dataset, we can separate the data into a low-rank component that can be described by the principle components, and a sparse component that contains all the outliers.
+
+$$
+X = L + S
+$$
+
+Where $X$ is the distribution of the data with the outliers, $L$ is the true distribution of the data, and $S$ is the outliers.
+
