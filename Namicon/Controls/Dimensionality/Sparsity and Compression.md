@@ -256,3 +256,42 @@ Alternating Directions Method (ADM):
 3. Use the $S_{\tau}$ and $SVT$ operators iteratively to solve for $L$ and $S$
 
 We can often apply this to high-dimensional data as they often have low-dimensional principal components. With PCA, we can decompose the data into several principal components that best approximates the data. With RPCA, we can decompose a super noisy or corrupted data into an approximation of the data and the corruption or noise.
+
+# Sparse sensor placement optimization
+
+If we know exactly what we're measuring, we can tailor the transformation basis matrix to our specific needs and drastically reduce the size and complexity of the matrix. This is tailored sensing.
+
+$$
+y = C \psi_r a = \Theta a
+$$
+
+The goal is to minimize $\Theta$ so that we can stably inverse $a$ to get $y$. How do we optimize the sensor placement in the $C$ matrix to match the tailored transformation basis? $C\psi$ will basically choose the row of the transformation basis.
+
+If we take the QR factorization of $C\psi$, we'd get pivot locations. Those pivot will tell us the best location to sample the system.
+
+$$
+\psi_r^T C^T = \text{QR}
+$$
+
+```python
+from scipy import linalg
+import numpy as np
+
+Q, R, pivot = linalg.qr(Psi_r.T, pivoting=True)
+C = np.zeros_like(Psi_r.T)
+C[pivot[:r]] = 1
+
+for k in range(r):
+	C[k, pivot[k]] = 1
+	
+Theta = np.dot(C , Psi_r)
+y = faces[pivot[:r]] # measure at pivot locations
+a = np.dot(np.linalg.pinv(Theta), y) # estimate coefficients
+face_reconstructed = np.dot(Psi_r, a)
+```
+
+Recap: We collect a large library of tailored data (example, pictures of human face) and build a tailored basis $\psi_r$ from that library. We run QR factorization on $\psi_r$ to get pivot points, which is the locations of the sensor in $C$, where to measure the system. With those sparse sensors in $C$, we measure the system $y$. With $y$ now known, we invert $\Theta$ to solve for $a$.
+
+# Sparse classification
+
+For image classification, even fewer sensors may be required than for reconstruction. For example, sparse sensors may be selected such that they contain the most discriminating information to characterize two categories of data.
