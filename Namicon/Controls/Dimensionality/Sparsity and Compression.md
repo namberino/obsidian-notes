@@ -292,6 +292,28 @@ face_reconstructed = np.dot(Psi_r, a)
 
 Recap: We collect a large library of tailored data (example, pictures of human face) and build a tailored basis $\psi_r$ from that library. We run QR factorization on $\psi_r$ to get pivot points, which is the locations of the sensor in $C$, where to measure the system. With those sparse sensors in $C$, we measure the system $y$. With $y$ now known, we invert $\Theta$ to solve for $a$.
 
-# Sparse classification
+# Sparse classification (SSPOC)
 
-For image classification, even fewer sensors may be required than for reconstruction. For example, sparse sensors may be selected such that they contain the most discriminating information to characterize two categories of data.
+For classification, even fewer sensors may be required than for reconstruction. For example, sparse sensors may be selected such that they contain the most discriminating information to characterize two categories of data.
+
+For example, for binary classifying whether an image contain a dog or a cat, we don't need to know what kind of dog or what kind of cat is in the picture, we just need to know the features that maximally tells us the difference between dogs and cats.
+
+With a training dataset containing a bunch of pictures of cats and dogs, we try to find the low-rank matrices that describes the data using something like SVD or PCA. In this low-dimensional space, the categories separate, having different principal components. If the data is separate, we can use SSPOC. We find the optimal sensor placement using sparse sensor placement optimization, which gives us the optimal sensor for the classification task.
+
+Targeted sensor placement
+
+$$
+s = \text{argmin}_{s'} || s'||_1 \text{, such that } \psi^T s = w
+$$
+
+With $s$ being the sensor placements and $w$ being the discriminant vector (derived from something like linear discriminant analysis). The data is projected onto this $w$ vector, which is fine-tuned to best distinguish cats and dogs
+
+![](./Assets/sspoc-visualization.png)
+
+The low-rank matrix gets turned into a low-dimensional space with the same dimension as the rank, containing the principal components that make up the dataset. If we have a high-res image, we want to map it onto this low-dimensional feature space. We try to find the sparsest $s$ possible that reconstructs the decision vector when mapped onto the feature space. The $s$ will contain $n$ non-zero elements, each corresponding to the best sensor placement to measure a new image for classification.
+
+![](./Assets/sspoc-visualization-2.png)
+
+With the sparse sensors, we can take a picture of a dog or a cat that's not in the training dataset, use the sensor and measure the pixel values on that image. Once we have those measurements, we can project that value onto the classification space (onto the $w$ vector) then classify.
+
+> Note: We don't have to use the sensor, we can just run the data through the transformation basis to extract the principal components then classify it by projecting it onto the $w$ vector and comparing it to other data that from the library that was also projected onto the $w$ vector. However, this isn't sparse.
