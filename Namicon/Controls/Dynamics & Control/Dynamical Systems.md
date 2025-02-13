@@ -103,3 +103,15 @@ $$
 $$
 
 In general, for most nonlinear dynamical systems, the flow map is hard to compute, so we'll have to approximate it numerically with schemes like forward Euler, Runge-Kutta, etc.
+
+# Logistic map
+
+$$
+x_{k+1} = \beta x_k (1 - x_k)
+$$
+
+As the parameter $\beta$ is increased (0 to 1), the attracting set becomes increasingly complex. A series of period-doubling bifurcations occur until the attracting set becomes fractal.
+
+Good model for population dynamics. The population grows at an exponential rate described by $\beta$, as it gets close to the capacity limit 1, it gradually levels off (because $1 - x_k$ gets closer to 0).
+
+As the growth rate β gets larger (faster), the system gets more chaotic. Break-neck population growth is a bad idea.
