@@ -31,3 +31,33 @@ Sometimes we don't have access to $x$ because it's exceedingly large, so we have
 $$
 y = g(x, t) + n
 $$
+
+# The Lorenz System
+
+One of the earliest chaotic models. It's a 3D model that gets a lot of the features of chaotic atmospheric convection.
+
+$$
+\begin{aligned}
+
+\dot{x} &= \sigma (y - x)
+
+\\
+
+\dot{y} &= x (\rho - z) - y
+
+\\
+
+\dot{z} &= xy - \beta z
+
+\\
+
+\underline{\beta} &= \begin{bmatrix} \sigma \\ \rho \\ \beta \end{bmatrix}, \underline{x} = \begin{bmatrix} x \\ y \\ z \end{bmatrix}
+
+\end{aligned}
+$$
+
+With $\underline{\beta}$ being the parameters vector and $\underline{x}$ being the state vector.
+
+$$
+\frac{d}{dt} \underline{x} = f(\underline{x}, t, \underline{\beta})
+$$
