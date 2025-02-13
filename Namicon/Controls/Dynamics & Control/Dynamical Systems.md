@@ -51,7 +51,7 @@ $$
 
 \\
 
-\underline{\beta} &= \begin{bmatrix} \sigma \\ \rho \\ \beta \end{bmatrix}, \underline{x} = \begin{bmatrix} x \\ y \\ z \end{bmatrix}
+\underline{\beta} &= \begin{bmatrix} \sigma & \rho & \beta \end{bmatrix}^T, \underline{x} = \begin{bmatrix} x & y & z \end{bmatrix}^T
 
 \end{aligned}
 $$
@@ -61,3 +61,45 @@ With $\underline{\beta}$ being the parameters vector and $\underline{x}$ being t
 $$
 \frac{d}{dt} \underline{x} = f(\underline{x}, t, \underline{\beta})
 $$
+
+# Discrete-Time Dynamical Systems
+
+Continuous time system:
+
+$$
+\dot{x} = f(x(t))
+$$
+
+Discrete time system (more general than continuous time systems):
+
+$$
+\begin{aligned}
+&x_{k + 1} = F (x_k)
+\\
+&x_k = x(k \Delta t)
+\end{aligned}
+$$
+
+Example: We're sampling an evolving population. We sample the system every day, so $\Delta t$ might be 1-day sampling, $k$ would be the current day (day 1, day 2, day 3, etc).
+
+Flow map ($F_{\Delta t}$):
+
+$$
+x_{k+1} = x_k + \int_{k\Delta t}^{(k+1)\Delta t} f(x(\tau)) d\tau
+$$
+
+Integrate the trajectory through the dynamical system for 1 $\Delta t$ to get the next $x$. Flowing the state from 1 point to another. The integral term evaluates the vector field $f$ as the state $x$ evolves.
+
+We can always go from a continuous time system to a discrete time system, but not always back.
+
+Simple flow map approximation with forward Euler:
+
+$$
+\begin{aligned}
+&\frac{x_{k + 1} - x_k}{\Delta t} \approx f(x_k)
+\\
+&x_{k+1} = x_k + \Delta t f(x_k)
+\end{aligned}
+$$
+
+In general, for most nonlinear dynamical systems, the flow map is hard to compute, so we'll have to approximate it numerically with schemes like forward Euler, Runge-Kutta, etc.
