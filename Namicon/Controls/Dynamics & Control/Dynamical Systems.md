@@ -115,3 +115,71 @@ As the parameter $\beta$ is increased (0 to 1), the attracting set becomes incre
 Good model for population dynamics. The population grows at an exponential rate described by $\beta$, as it gets close to the capacity limit 1, it gradually levels off (because $1 - x_k$ gets closer to 0).
 
 As the growth rate β gets larger (faster), the system gets more chaotic. Break-neck population growth is a bad idea.
+
+# Dynamic Mode Decomposition (DMD)
+
+DMD can be used to obtain linear reduced-order models for high dimensional complex systems. We can also extract spatial and temporal structures from the data.
+
+DMD gives you a coupled system of spatial and temporal modes. It's a purely data-driven method and it doesn't require any knowledge of the underlying equations of motion.
+
+Say we have an movie of fluid flow measurements, we can split up the movie into individual images or snapshots. The snapshots $x_m$ illustrates how the system evolves in time.
+
+We can organize these snapshots data into these big matrices by reshaping the snapshot into column vectors. The $X$ matrix shows us how the system evolves in time from time 1 to time $m-1$. $X'$ is the same as $X$, but shifted by 1 time step ($\Delta t$) into the future.
+
+$$
+\begin{aligned}
+&X = \begin{bmatrix} | & | & & | \\ x_1 & x_2 & ... & x_{m-1} \\ | & | & & |\end{bmatrix}
+\\
+&X' = \begin{bmatrix} | & | & & | \\ x_2 & x_3 & ... & x_m \\ | & | & & |\end{bmatrix}
+\end{aligned}
+$$
+
+In our case, these are nonlinear Navier-Stokes equations. These matrices are usually very tall an skinny.
+
+With these matrices, the DMD will find a best-fit linear operator $A$ (a matrix) that advances $X$ into $X'$ (maps $X$ into $X'$).
+
+$$
+X' \approx A X
+$$
+
+We definitely don't want to compute the $A$ matrix as it is too large. The DMD approximates the leading eigendecomposition of the dominant eigenvalues and eigenvectors of the $A$ matrix without actually computing the matrix itself.
+
+The eigenvectors give us these spatial dynamic modes and the eigenvalues corresponds to the time dynamic. So the eigendecomposition gives us these coherent dominant structures and tells us how these modes evolve in time.
+
+With $A$, we can use it to predict how the system will evolve:
+
+$$
+x_{k+1} = A x_k
+$$
+
+Uses: system diagnostic, state prediction, control.
+
+DMD computation (4 steps):
+
+$$
+\begin{aligned}
+&\text{1. } X = U\Sigma V^* \text{; } X' = A U \Sigma V^*
+\\
+&\text{2. } U^* X' V \Sigma^{-1} = U^* A U = \tilde{A}
+\\
+&\text{3. } \tilde{A} W = W \Lambda
+\\
+&\text{4. } \Phi = X' V \Sigma^{-1} W
+\end{aligned}
+$$
+
+In most high dimensional complex dynamical systems of interest, with enough data snapshots, there's usually dominant coherent patterns that emerge.
+
+First step is computing an SVD of $X$, the columns of $U$ are the dominant structure of the data. $X'$ is now $A$ times the SVD of $X$. Next, we can project $A$ on to the $U$ matrix with $U^*AU$ and get an approximation of $A$. $\tilde{A}$ is a best-fit linear dynamical system that tells us how the modes in $U$ evolve in time with the same eigenvalues as the $A$ matrix. Next, we decompose the approximation matrix $\tilde{A}$ to get the eigenvalues of $A$ with $W$ being the eigenvectors of $\tilde{A}$ and $\Lambda$ being the eigenvalues of $\tilde{A}$. Lastly, we want the eigenvectors of the original $A$ matrix, $\Phi$.
+
+If the first few columns of $U$ manage to capture most of the energy of $X$ then we can truncate the SVD and have a much smaller $\tilde{A}$. With these 2 matrices, we can now predict the future state of the system, with $b_0$ being the initial amplitude of each of the modes in $\Phi$.
+
+$$
+\hat{X}(k\Delta t) = \Phi \Lambda^t b_0
+$$
+
+This works great for periodic or quasi-periodic systems even if the system is nonlinear.
+
+DMD is kind of the spiritual child of both PCA and Fourier transform. We built a linear regression model on the SVD modes then we diagonalizes the model to find the dominant patterns in time.
+
+DMD has a strong connection to the Koopman analysis
