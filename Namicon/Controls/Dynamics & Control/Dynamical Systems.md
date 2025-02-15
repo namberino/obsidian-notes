@@ -182,4 +182,6 @@ This works great for periodic or quasi-periodic systems even if the system is no
 
 DMD is kind of the spiritual child of both PCA and Fourier transform. We built a linear regression model on the SVD modes then we diagonalizes the model to find the dominant patterns in time.
 
-DMD has a strong connection to the Koopman analysis
+DMD has a strong connection to the Koopman analysis. There's a lot of extension for DMD. It's also highly applicable to different fields and applications.
+
+Example an 80x80 video with 2 signals: a square blinking fast, and a gaussian blinking phasing in and out slowly with the 2 of them overlapping each other a little bit. The PCA can only decompose the signal in the spatial domain. Applying the PCA on this signal will give us the principal components, which gets the rank and the structure of the system correctly, but it doesn't split up the 2 different signals that are blinking at different rate. DMD is able to do this because it analyze the system in both the spatial domain and the temporal domain, allowing us to separate the fast and slow dynamics of the system, capturing the frequency of the evolution of those dynamics while still capturing the dominant spatial structure.
