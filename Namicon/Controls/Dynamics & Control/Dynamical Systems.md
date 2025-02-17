@@ -203,3 +203,53 @@ We start with $\dot{x}$, we apply sparse regression to find the fewest columns o
 ![](./Assets/sindy-sparse-regression-columns-selection.png)
 
 In principle, we don't want to actually measure $x$, $y$, $z$, and the derivative. In a lot of systems, we don't get to measure the derivatives, we have to compute them from the measurements. Even with noisy data, we can still identify the structure of the data.
+
+```
+’’ ’xdot’ ’ydot’ ’zdot’
+’1’ [ 0] [ 0] [ 0]
+’x’ [-10.0000] [28.0000] [ 0]
+’y’ [ 10.0000] [-1.0000] [ 0]
+’z’ [ 0] [ 0] [-2.6667]
+’xx’ [ 0] [ 0] [ 0]
+’xy’ [ 0] [ 0] [ 1.0000]
+’xz’ [ 0] [-1.0000] [ 0]
+’yy’ [ 0] [ 0] [ 0]
+’yz’ [ 0] [ 0] [ 0]
+’zz’ [ 0] [ 0] [ 0]
+’xxx’ [ 0] [ 0] [ 0]
+’xxy’ [ 0] [ 0] [ 0]
+’xxz’ [ 0] [ 0] [ 0]
+’xyy’ [ 0] [ 0] [ 0]
+’xyz’ [ 0] [ 0] [ 0]
+’xzz’ [ 0] [ 0] [ 0]
+’yyy’ [ 0] [ 0] [ 0]
+’yyz’ [ 0] [ 0] [ 0]
+’yzz’ [ 0] [ 0] [ 0]
+’zzz’ [ 0] [ 0] [ 0]
+```
+
+Example: Vortex shredding past a cylinder
+
+The question here is how do we capture a 3rd-order Hopf bifurcation phenomenon of a fluid system that has quadratic nonlinearities. Below is a solution to how we can get a Hopf bifurcation with a system of quadratic nonlinearities.
+
+$$
+\begin{aligned}
+&\dot{x} = \mu x - \omega y + Axz
+\\
+&\dot{y} = \omega x + \mu y + Ayz
+\\
+&\dot{z} = -\lambda (z - x^2 - y^2)
+\end{aligned}
+$$
+
+The ODEs above are nonlinear quadratics, but they still exhibit the Hopf bifurcation phenomenon.
+
+![](./Assets/hopf-bifurcation-quadratic-nonlinearities.png)
+
+The ideas is we could have a fast directions of the flow and slow directions of the flow. $z$ is a fast variable in the fast direction between some unstable fixed point and the mean flow of the vortex shredding $B$. $z$ rapidly adheres the the slow parabolic manifold. $x$ and $y$ are the magnitude of the vortex shredding. $z$ will wraps around the manifold until we get the periodic vortex shredding in $x$ and $y$. $z$ is called the shift mode and $x$ and $y$ are the modes that describes vortex shredding.
+
+![](./Assets/sindy-cylinder-fluid-dynamics-example.png)
+
+We collect data from the simulation then do some dimensionality reduction like PCA to find the modes that describes the vortex shredding and the shift mode. We plug those 3 time series (the 2 modes and shift mode). The identified system has structurally the same form.
+
+> Note: To actually correctly identify the quadratic nonlinearities for the problem, we have to kick the system off the attractor for systems that have some sort of attractor to see how the system falls back on the attractor.
