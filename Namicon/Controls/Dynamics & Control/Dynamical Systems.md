@@ -277,3 +277,85 @@ $$
 SINDy can be applied to this too, we just also have to take $u$ into consideration along with $x$, $y$, and $z$.
 
 Recap: In SINDy, we first measure $x$, $y$, $z$ of the system (if we only measure $x$, we can build time delay coordinates). Then we find some basis library that represents the possible nonlinear dynamics that explains the measurements. Then we use LASSO or sparse regression to find the fewest features required to explain the measurements.
+
+[PDE-FIND](https://pysindy.readthedocs.io/en/latest/examples/10_PDEFIND_examples/example.html) - SINDy for discovering PDEs.
+
+# Koopman Operator Theory
+
+$$
+\frac{d}{dt} x = f(x)
+$$
+
+For many systems of interest, the equations for the dynamical system is unknown or partially unknown. Koopman can help us discover these equations. It can also help us understand the nonlinear dynamical systems better, it can also help us find the optimal nonlinear control and estimation for these systems. Chaos, transients, intermittent phenomena are very challenging along with multi-scale physics like turbulent or disease or neuroscience or etc (big open problem).
+
+Koopman analysis impact nonlinearity the most. It makes nonlinear systems more amenable to linear analysis. Koopman analysis is a coordinate transformation that transform into some special measurement coordinate where nonlinear systems look linear and can be analyzed linearly.
+
+It is possible to represent a nonlinear dynamical system in terms of an infinite-dimensional linear operator acting on a Hilbert space of measurement functions of the state of the system. This Koopman operator is linear, and its spectral decomposition completely characterizes the behavior of a nonlinear system. Because the operator is infinite, we need to try to find some approximation or embeddings that best represents it.
+
+In the state-space model of nonlinear equations, we can integrate trajectories through the equations and watch the model evolve through time. 
+
+$$
+\begin{aligned}
+\frac{d}{dt} x = f(x) &\rightarrow F_t(x(t_0)) = x(t_0 + t) = x(t_0) + \int_{t_0}^{t_0+t} f(x(\tau)) d\tau
+\\
+&\rightarrow x_{k+1} = F_t(x_k)
+\end{aligned}
+$$
+
+The Koopman operator thinks about measurements of the system $g$ instead ($\circ$ is the composition operator).
+
+$$
+\begin{aligned}
+\mathcal{K}_t g = g \circ F_t &\rightarrow \mathcal{K}_tg(x_k) = g(F_t(g_k)) = g(x_{k+1})
+\\
+&\rightarrow g(x_{k+1}) = \mathcal{K}_tg(x_k)
+\end{aligned}
+$$
+
+$g$ could be any measurement of $x$ in the infinite-dimensional Hilbert space of measurements (some inner products of the measurements). If we pick a basis (like Fourier or Taylor), we can write it $g$ down as an infinite-dimensional vector of coefficients in that basis. The Koopman operator $\mathcal{K}$ advances the measurements by 1 time step then remeasures the system at that time step. We want to find an linear approximation matrix that advances the measurements forward in time. We can compute the eigenvalues and eigenvectors and get future predictions and controls.
+
+We need to try to identify the eigenfunctions of the Koopman operator.
+
+Example: Koopman linear embeddings
+
+$$
+\begin{aligned}
+&\dot{x_1} = \mu x_1
+\\
+&\dot{x_2} = \lambda (x_2 - x_1^2)
+\end{aligned}
+$$
+
+The first state variable $\dot{x_1}$ is decoupled and is purely linear (no $x_2$ dependency). The second state variable $\dot{x_2}$ is nonlinear and if $\lambda$ is more stable than $\mu$ (more negative real part) then $x_2$ will rapidly equal $x_1^2$.
+
+According to the Koopman operator theory, if we take the measurements at $x_1$ and $x_2$ along with an extra measurement $x_1^2$ (nonlinear), we can write the nonlinear dynamical system as a linear dynamical system
+
+$$
+\frac{d}{dt} \begin{bmatrix} y_1 \\ y_2 \\ y_3 \end{bmatrix} = \begin{bmatrix} \mu & 0 & 0 \\ 0 & \lambda & -\lambda \\ 0 & 0 & 2\mu \end{bmatrix} \begin{bmatrix} y_1 \\ y_2 \\ y_3 \end{bmatrix} \text{ for } \begin{bmatrix} y_1 \\ y_2 \\ y_3 \end{bmatrix} = \begin{bmatrix} x_1 \\ x_2 \\ x_1^2 \end{bmatrix}
+$$
+
+Note: the derivative of $y_3$, which is $x_1^2$, is $2\mu x_1$ as the derivative of $x_1$ is $\mu x_1$.
+
+Linear dynamics in eigenfunction coordinates:
+
+$$
+\frac{d}{dt} \phi (x) = \lambda \phi(x)
+$$
+
+We want to find $\phi(x)$ so that the dynamics can be described linearly.
+
+$$
+\frac{d}{dt} \phi (x) = \triangledown \phi(x) \cdot \dot{x} = \triangledown \phi(x) \cdot f(x)
+$$
+
+We can calculate the derivative of $\phi(x)$ by taking the gradient of $\phi(x)$ dotted with $f(x)$. So we have this PDE for Koopman eigenfunctions:
+
+$$
+\lambda \phi(x) = \triangledown \phi(x) \cdot f(x)
+$$
+
+Any smooth, continuous Koopman eigenfunction has to be a solution of this PDE. For low-dimensional dynamical systems where you know $f(x)$, we can solve for eigenfunctions analytically using the Taylor or Laurent series.
+
+In practice, most of the time, we don't really know $f(x)$ and we can't solve it analytically. Instead, we have to use DMD to approximate the Koopman operator. For a movie of measurements with snapshots going from $x_1$ to $x_m$, we can take the DMD of it and find the best-fit linear operator that advances the data forward in time and that operator should be related to the Koopman operator.
+
+The Koopman operator advances measurements forward in time linearly, which is pretty similar to the best-fit linear operator $A$ in DMD. DMD is useful for extracting the coherent structures that have simple time dynamics as the nonlinear system evolves. The Koopman eigenfunction needs to do just that, we want these mixture of measurements at which if we measure our system, we get linear dynamics.
