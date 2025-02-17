@@ -185,3 +185,21 @@ DMD is kind of the spiritual child of both PCA and Fourier transform. We built a
 DMD has a strong connection to the Koopman analysis. There's a lot of extension for DMD. It's also highly applicable to different fields and applications.
 
 Example an 80x80 video with 2 signals: a square blinking fast, and a gaussian blinking phasing in and out slowly with the 2 of them overlapping each other a little bit. The PCA can only decompose the signal in the spatial domain. Applying the PCA on this signal will give us the principal components, which gets the rank and the structure of the system correctly, but it doesn't split up the 2 different signals that are blinking at different rate. DMD is able to do this because it analyze the system in both the spatial domain and the temporal domain, allowing us to separate the fast and slow dynamics of the system, capturing the frequency of the evolution of those dynamics while still capturing the dominant spatial structure.
+
+# Sparse Identification of Nonlinear Dynamics (SINDy)
+
+SINDy allows us to discover governing equations for nonlinear dynamical systems purely from measurement data.
+
+Example: Lorenz system. In the Lorenz system, the only constant terms are $\sigma$, $\rho$, and $\beta$. Let's say we don't know the Lorenz system's ODEs but we have 2 big matrices containing measurements of the system. 1 matrix contain the result $\dot{x}$, $\dot{y}$, $\dot{z}$ at time $t$. 1 matrix contain the condition at of the system $x$, $y$, $z$ that lead to the result at time $t$.
+
+Next, we construct a matrix with vectors of all possible polynomial nonlinearities up to order 5.
+
+![](../Dimensionality/Assets/lorenz-system-lasso-application.png)
+
+We'll apply some kind of regression to find which linear combination of these nonlinear terms represent the results $\dot{x}$, $\dot{y}$, $\dot{z}$. We're relying on the fact that the right-hand side dynamics of the Lorenz system is sparse.
+
+We start with $\dot{x}$, we apply sparse regression to find the fewest columns of the library $\Theta(X)$ that are needed to describe $\dot{x}$. What we might find is all we need is the $x$ and $y$ columns, which means we just need $x$ and $y$ in some linear combination to represent $\dot{x}$, all other terms are unnecessary to $\dot{x}$. Then we do the same thing for both $\dot{y}$ and $\dot{z}$.
+
+![](./Assets/sindy-sparse-regression-columns-selection.png)
+
+In principle, we don't want to actually measure $x$, $y$, $z$, and the derivative. In a lot of systems, we don't get to measure the derivatives, we have to compute them from the measurements. Even with noisy data, we can still identify the structure of the data.
