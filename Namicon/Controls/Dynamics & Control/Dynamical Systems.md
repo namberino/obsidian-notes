@@ -253,3 +253,27 @@ The ideas is we could have a fast directions of the flow and slow directions of 
 We collect data from the simulation then do some dimensionality reduction like PCA to find the modes that describes the vortex shredding and the shift mode. We plug those 3 time series (the 2 modes and shift mode). The identified system has structurally the same form.
 
 > Note: To actually correctly identify the quadratic nonlinearities for the problem, we have to kick the system off the attractor for systems that have some sort of attractor to see how the system falls back on the attractor.
+
+Sometimes the dynamical system is not just evolving in its natural state but is also being forced on.
+
+$$
+\begin{aligned}
+\dot{x} &= \sigma (y - x) + g(u)
+\\
+\dot{y} &= x (\rho - z) - y
+\\
+\dot{z} &= xy - \beta z
+\end{aligned}
+$$
+
+> Note: $g(u)$ can be placed in $x$, $y$, or $z$ or all 3 of them. 
+
+$g(u)$ allows us to enter a control signal linearly or nonlinearly. $u$ can be a nonlinear function itself, like this state feedback control for example:
+
+$$
+u(t) = 26 - x(t) +d(t)
+$$
+
+SINDy can be applied to this too, we just also have to take $u$ into consideration along with $x$, $y$, and $z$.
+
+Recap: In SINDy, we first measure $x$, $y$, $z$ of the system (if we only measure $x$, we can build time delay coordinates). Then we find some basis library that represents the possible nonlinear dynamics that explains the measurements. Then we use LASSO or sparse regression to find the fewest features required to explain the measurements.
