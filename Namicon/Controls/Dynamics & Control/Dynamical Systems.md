@@ -2,7 +2,7 @@
 
 In some field, there's no physics equation that capable of modeling the system that that field is researching. However, there are more and more data in those fields. We can utilize those data to build models. First principle physics model wouldn't be applicable to building models of these kinds of systems, we'll have to use data.
 
-Big problems in modern dynamical systems: Linear systems are fully understood. Nonlinear systems ($f$) makes it hard to understand and control the system. Sometimes $f$ is unknown and we need to discover it from data. High dimensional systems uses very high dimensional state vector (large $x$). Chaotic and transient systems, noisy and stochastic measurements, multi-scale dynamics, uncertainty in systems are also challenging.
+Big problems in modern dynamical systems: Linear systems are fully understood. Nonlinear systems ($f$) makes it hard to understand and control the system. Sometimes $f$ is unknown and we need to discover it from data. High dimensional systems uses very high dimensional state vector (large $x$). Chaotic and transient systems, noisy and stochastic measurements, multiscale dynamics, uncertainty in systems are also challenging.
 
 Uses of models: Predicting future states, design and optimization, control, etc.
 
@@ -286,7 +286,7 @@ $$
 \frac{d}{dt} x = f(x)
 $$
 
-For many systems of interest, the equations for the dynamical system is unknown or partially unknown. Koopman can help us discover these equations. It can also help us understand the nonlinear dynamical systems better, it can also help us find the optimal nonlinear control and estimation for these systems. Chaos, transients, intermittent phenomena are very challenging along with multi-scale physics like turbulent or disease or neuroscience or etc (big open problem).
+For many systems of interest, the equations for the dynamical system is unknown or partially unknown. Koopman can help us discover these equations. It can also help us understand the nonlinear dynamical systems better, it can also help us find the optimal nonlinear control and estimation for these systems. Chaos, transients, intermittent phenomena are very challenging along with multiscale physics like turbulent or disease or neuroscience or etc (big open problem).
 
 [Modern Koopman Theory for Dynamical Systems](https://arxiv.org/pdf/2102.12086)
 
@@ -319,6 +319,12 @@ $$
 $g$ could be any measurement of $x$ in the infinite-dimensional Hilbert space of measurements (some inner products of the measurements). If we pick a basis (like Fourier or Taylor), we can write it $g$ down as an infinite-dimensional vector of coefficients in that basis. The Koopman operator $\mathcal{K}$ advances the measurements by 1 time step then remeasures the system at that time step. We want to find an linear approximation matrix that advances the measurements forward in time. We can compute the eigenvalues and eigenvectors and get future predictions and controls.
 
 We need to try to identify the eigenfunctions of the Koopman operator.
+
+> If we find a measurement subspace that is invariant to the Koopman operator, the Koopman operator, restricted to that subspace, becomes a finite-dimensional linear operator (matrix).
+
+![](./Assets/koopman-invariant-subspaces.png)
+
+However, these subspaces are very hard to find. They're also related to eigenfunctions of the operator.
 
 Example: Koopman linear embeddings
 
@@ -424,3 +430,79 @@ DMD has a high-error for transient, intermittent, or chaotic systems but low com
 
 If we don't cross-validate the data and try to fit the training error perfectly, we might run into overfitting. Some good models that fits the error-complexity criteria are [DeepKoopman](https://github.com/BethanyL/DeepKoopman), [KRONIC](https://github.com/eurika-kaiser/KRONIC), eDMD, [VAC](https://refubium.fu-berlin.de/bitstream/handle/fub188/7187/Thesis_Published.pdf?sequence=1).
 
+## Control theory applications
+
+The Koopman operator will allow us to represent complex nonlinear systems in terms of linear combinations using the eigenfunctions of the operator. With the coordinate transformation of the Koopman operator, we can apply linear control methods on the coordinate space where the system looks linear.
+
+Once we've found these coordinates, we can apply a controller (such as LQR) directly on the system's representation in that coordinate system.
+
+![](./Assets/koopman-control-lqr-example.png)
+
+Pipeline:
+- Take the data, write down the dynamical system (discover using DMD, SINDy, etc).
+- Find Koopman embedding coordinates (The coordinates are nonlinear eigenfunction measurements where the system looks linear).
+- Do Koopman operator control to get nonlinear optimal control.
+
+The goal is even if we don't know the system or the measurements, we can mine that from data.
+
+![](./Assets/koopman-eigenfunction-control.png)
+
+Control in eigenfunction coordinates (with $Bu$ being the control input):
+
+$$
+\begin{aligned}
+\frac{d}{dt} x(t) &= f(x) + Bu
+\\
+\frac{d}{dt} \phi(t) &= \triangledown \phi(x) \cdot (f(x) + Bu)
+\\
+&=\lambda \phi(x) + \triangledown \phi(x) \cdot Bu
+\end{aligned}
+$$
+
+$\phi(x)$ being the eigenfunctions. The final equation is a linear dynamics with a state-dependent actuation $\triangledown \phi(x) \cdot Bu$. And we can find these $\phi$ eigenfunctions using sparse regression. For the control, instead of trying to move the state to the origin or some reference value, we can directly steer the eigenfunctions itself to higher or lower energy states.
+
+## Continuous spectrum
+
+Systems where the Koopman operator doesn't have a discrete spectrum of eigenvalues but a continuum spectrum are particularly hard for data-driven representation.
+
+Side track: [HAVOK](https://www.nature.com/articles/s41467-017-00030-8) is basically do time delay coordinates, then do DMD, and we get good Koopman representations of chaotic systems.
+
+![](./Assets/havok-diagram-lorenz.png)
+
+An example of continuous spectrum systems is the pendulum. We couldn't really write down eigenfunctions of the pendulum in Koopman analysis and get a linear representation. The pendulum is continuous is because as we increase the drop altitude, the oscillation period also increases, lower frequency, until we put it perfectly vertical, at which case, the period draws out to $\infty$. The natural frequency of the pendulum continuously deforms as we increase the energy of the system. There's no discrete eigenvalue but there's a continuum of eigenvalues.
+
+A solution to the representation problem can be found [here](https://arxiv.org/abs/1712.09707). It's based on a Koopman auto-encoder neural network. We take the data, run it through some nonlinear layers and find a few intrinsic coordinates given by the eigenfunction $\phi(x)$. And we make sure the functions can be inverted to give us the state back. We also have this linear time stepper in the middle to advance $y^k$ using a linear mapping $K$.
+
+![](./Assets/koopman-auto-encoder-nn.png)
+
+We can parameterize the network with an auxiliary side network. The side network learns the continuous spectrum's dependence on the state $X$.
+
+Recap: How Koopman analysis is applied to continuous spectrum systems is quite important. Currently, 2 major methods to do this are time delay coordinates and deep neural networks.
+
+## Multiscale systems
+
+Analysis of systems with multiple scales in space and time (exhibiting diverse behaviors across multiple time scales) is quite important.
+
+> This [paper](https://arxiv.org/abs/1805.07411) describes several methods for discovering nonlinear multiscale dynamical systems and their embeddings from data.
+
+We can use time delay coordinates for multiscale systems where we have vast scale separations. We can pull out the scale-separated dynamics from measurement data.
+
+# Hankel Alternative View of Koopman (HAVOK)
+
+Let's say we have a system (Lorenz) and we only have measurement ($x$) of 1 variable in time. For this system, the switching from 1 attractor to another is pretty unpredictable. We build up a set of time delay coordinates $H$ (Hankel matrix).
+
+![](./Assets/havok-hankel-matrix.png)
+
+If we take the SVD of this $H$ matrix, we get 3 matrices, who's first columns and sub blocks will capture the most energy of the measurement. Next, we can take the columns of $V$ ($v_1$, $v_2$, $v_3$, ..., $v_r$) and plot them out, we get the new embedded attractor. The embedded attractor is diffeomorphic to the original attractor.
+
+Now, instead of writing the Hankel matrix in terms of time 1, time 2, etc, let's write them in terms of iterations of the Koopman operator.
+
+![](./Assets/hankel-matrix-koopman-version.png)
+
+With this matrix, taking the SVD of this new matrix, we can take a few leading columns of $U$ of the SVD and still capture most of the energy inside $H$. Those are the measurement subspaces. The time delay coordinates in $U$ is a measurement subspace and using the Koopman operator on those subspaces will keep us in those subspaces. The more data we collect, the better the approximation will be.
+
+With the time delay coordinates in $V$, we build a regression model on those coordinates. The last $v$ value has horrible fit, so we omit that term and consider it as an intermittent forcing term. So we have $\dot{V}$ is equal to the matrix $A$ times $V$ plus the matrix $B$ times $v_r$.
+
+![](./Assets/havok-time-delay-coordinate-regression.png)
+
+This regression gives us the predicted linear dynamics of the system. With the predicted linear dynamics, we can reconstruct the embedded attractor.
