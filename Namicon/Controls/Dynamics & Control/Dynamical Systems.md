@@ -288,6 +288,8 @@ $$
 
 For many systems of interest, the equations for the dynamical system is unknown or partially unknown. Koopman can help us discover these equations. It can also help us understand the nonlinear dynamical systems better, it can also help us find the optimal nonlinear control and estimation for these systems. Chaos, transients, intermittent phenomena are very challenging along with multi-scale physics like turbulent or disease or neuroscience or etc (big open problem).
 
+[Modern Koopman Theory for Dynamical Systems](https://arxiv.org/pdf/2102.12086)
+
 ## Overview
 
 Koopman analysis impact nonlinearity the most. It makes nonlinear systems more amenable to linear analysis. Koopman analysis is a coordinate transformation that transform into some special measurement coordinate where nonlinear systems look linear and can be analyzed linearly.
@@ -361,6 +363,8 @@ Any smooth, continuous Koopman eigenfunction has to be a solution of this PDE. F
 In practice, most of the time, we don't really know $f(x)$ and we can't solve it analytically. Instead, we have to use DMD to approximate the Koopman operator. For a movie of measurements with snapshots going from $x_1$ to $x_m$, we can take the DMD of it and find the best-fit linear operator that advances the data forward in time and that operator should be related to the Koopman operator.
 
 The Koopman operator advances measurements forward in time linearly, which is pretty similar to the best-fit linear operator $A$ in DMD. DMD is useful for extracting the coherent structures that have simple time dynamics as the nonlinear system evolves. The Koopman eigenfunction needs to do just that, we want these mixture of measurements at which if we measure our system, we get linear dynamics.
+
+To recap, the Koopman operator is an infinite-dimensional coordinate transformation operator that maps a nonlinear system's coordinate to a coordinate system where the nonlinear system exhibit linear behaviors. The Koopman operator advances a measurement function $g(x)$ forward in time. The eigenfunctions of the Koopman operator can be linearly combined to represent the system. The Koopman operator can be approximated as a finite-dimensional matrix; the eigenfunctions of the Koopman operator can be approximated by the eigenvectors and eigenvalues of that finite-dimensional matrix.
 
 ## Representations
 
