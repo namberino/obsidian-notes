@@ -288,6 +288,8 @@ $$
 
 For many systems of interest, the equations for the dynamical system is unknown or partially unknown. Koopman can help us discover these equations. It can also help us understand the nonlinear dynamical systems better, it can also help us find the optimal nonlinear control and estimation for these systems. Chaos, transients, intermittent phenomena are very challenging along with multi-scale physics like turbulent or disease or neuroscience or etc (big open problem).
 
+## Overview
+
 Koopman analysis impact nonlinearity the most. It makes nonlinear systems more amenable to linear analysis. Koopman analysis is a coordinate transformation that transform into some special measurement coordinate where nonlinear systems look linear and can be analyzed linearly.
 
 It is possible to represent a nonlinear dynamical system in terms of an infinite-dimensional linear operator acting on a Hilbert space of measurement functions of the state of the system. This Koopman operator is linear, and its spectral decomposition completely characterizes the behavior of a nonlinear system. Because the operator is infinite, we need to try to find some approximation or embeddings that best represents it.
@@ -359,3 +361,62 @@ Any smooth, continuous Koopman eigenfunction has to be a solution of this PDE. F
 In practice, most of the time, we don't really know $f(x)$ and we can't solve it analytically. Instead, we have to use DMD to approximate the Koopman operator. For a movie of measurements with snapshots going from $x_1$ to $x_m$, we can take the DMD of it and find the best-fit linear operator that advances the data forward in time and that operator should be related to the Koopman operator.
 
 The Koopman operator advances measurements forward in time linearly, which is pretty similar to the best-fit linear operator $A$ in DMD. DMD is useful for extracting the coherent structures that have simple time dynamics as the nonlinear system evolves. The Koopman eigenfunction needs to do just that, we want these mixture of measurements at which if we measure our system, we get linear dynamics.
+
+## Representations
+
+So we can use the Koopman operator to find these coordinate systems where nonlinear systems start to look linear. We want to find the eigenfunctions of the Koopman operator to transform the system into these measurements. Then we can use those linear embeddings for linear estimations, predictions, controls, analyses, etc.
+
+Finding these representations is still very difficult. [Extended DMD](https://arxiv.org/pdf/1408.4408) is a method that allows us to efficiently find these representations. What eDMD does is it augments the state vector $X$ with a bunch of nonlinear measurements ($x^2$, $x^3$, etc), then find the best-fit linear operator that advances the entire augmented nonlinear state forward in time. That gets much close to approximating the Koopman operator.
+
+For a large augmented matrix, we could run into overfitting if we're not careful. To avoid overfitting, we can use sparsity in the regression. We use sparsity-promoting regression to find eigenfunctions directly. The eDMD tries to find a gigantic $A$ matrix that maps the nonlinear measurements forward in time. The eigenvalues and eigenvectors of $A$ are often nonlinear even though $A$ is a linear regression matrix. So instead of building this huge matrix, we can identify the relevant eigenfunctions directly and use sparse regression to prevent overfitting.
+
+PDE for Koopman eigenfunctions:
+
+$$
+\triangledown \phi(x) \cdot f(x) = \lambda \phi(x)
+$$
+
+With this PDE, first we'll try to expand the $\phi(x)$ with a library of candidate functions $\Theta(x)$.
+
+$$
+\begin{aligned}
+&\Theta (x) = \begin{bmatrix} \theta_1(x) & \theta_2(x) & ... & \theta_n(x) \end{bmatrix}
+\\
+&\phi(x) = \sum_{k=1}^n \theta_k(x) \xi_k = \Theta(x)\xi
+\end{aligned}
+$$
+
+$\xi$ is a sparse vector of coefficients. It's sparse because we only want to pick a few of these functions in $\Theta(x)$ then add up a linear combination to approximate the eigenfunction.
+
+![](./Assets/koopman-edmd-matrix-theta-x.png)
+
+We can construct $\Theta(X)$, we can also construct $\Gamma(X, \dot{X})$, which is the chain rule derivative on the PDE. With these 2 matrices, we can construct the sparse regression to solve for the sparse vector $\xi$:
+
+$$
+\begin{aligned}
+&(\lambda\Theta(X) - \Gamma(X, \dot{X}))\xi = 0
+\\
+&\lambda \xi = \Theta^{\dagger} \Theta' \xi
+\end{aligned}
+$$
+
+Below is a diagram for the Koopman eigenfunctions approximation for the Duffing oscillator.
+
+$$
+\begin{aligned}
+&\dot{x} = f(x)
+\\
+&\dot{x} = y
+\\
+&\dot{y} = x - x^3
+\end{aligned}
+$$
+
+![](./Assets/edmd-koopman-flow-diagram.png)
+
+DMD has a high-error for transient, intermittent, or chaotic systems but low complexity. The full Koopman eigenfunctions on the other hand, has very low error for those kinds of systems, but it's highly complex (cuz infinite-dimensional). What we want is to find a trade-off model that is a middle ground between the error and the complexity scale.
+
+![](./Assets/koopman-dmd-error-complexity-graph.png)
+
+If we don't cross-validate the data and try to fit the training error perfectly, we might run into overfitting. Some good models that fits the error-complexity criteria are [DeepKoopman](https://github.com/BethanyL/DeepKoopman), [KRONIC](https://github.com/eurika-kaiser/KRONIC), eDMD, [VAC](https://refubium.fu-berlin.de/bitstream/handle/fub188/7187/Thesis_Published.pdf?sequence=1).
+
