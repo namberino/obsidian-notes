@@ -127,3 +127,45 @@ x(t) = T z(t)
 $$
 
 And T will just transform $z(t)$ from the eigencoordinate back into the original coordinate system $x(t)$.
+
+# Stability
+
+Stability has a lot to do with the eigenvalues (which can be complex) of the matrix $A$, which is heavily utilized in $e^{Dt}$. If any of the terms in the diagonal matrix $e^{Dt}$ blows up to infinity, there's a high probability that $x(t)$ will also blow up to infinity.
+
+Each of the $\lambda$ value in the diagonal matrix has a real and imaginary part. We can imagine these eigenvalues in the complex plane.
+
+$$
+\begin{aligned}
+&\lambda = a + ib
+\\
+&e^{Dt} = e^{at} [\cos(bt) + i \sin(bt)]
+\end{aligned}
+$$
+
+If $a \gt 0$, the system is growing exponentially to $\infty$. If $a \lt 0$, the system is decaying exponentially to 0. So the system is stable if and **only if** all the real parts $a$ in all the eigenvalues $\lambda_n$ are negative, otherwise, the system is unstable. So if the system is unstable, a couple eigenvalues are positive, we can add a control term $+ Bu$ to the system $\dot{x} = Ax$ to try to drive the unstable eigenvalues to the negative side.
+
+A real-life system is not continuous, it's measured in discrete time. With $x_k = x(k \Delta t)$, we have:
+
+$$
+x_{k+1} = \tilde{A} x_k
+$$
+
+This is a discrete update of the system, updating the state vector at time $k$ to time $k + 1$ with a time step of $\Delta t$. $\tilde{A}$ is how the $A$ matrix will update the dynamics based on the time step.
+
+$$
+\tilde{A} = e^{A\Delta t}
+$$
+
+In discrete time, there's also stability but it's a bit different. If we have $x_0$, we can compute trajectory of the system and all possible future states of the system by continuously multiply that initial state with $\tilde{A}$.
+
+$$
+x_N = \tilde{A}^N x_0
+$$
+
+So the same thing will happen in this discrete time case as in the continuous time case, $\tilde{A}$ can be expanded to $T e^{D \Delta t} T^{-1}$, and the $T$ matrix is just a coordinate transformation. $x_0$ will be multiplied with the diagonal matrix itself. What we find is that the eigenvalues will grow or decay. In the complex plain, the radius of the eigenvalue will expand or shrink.
+
+So if the value of $\lambda$ is less than 1, the system is stable, else, if it's larger than 1, it's unstable.
+
+![](./Assets/stability-discrete-time-complex-plane.png)
+
+Recap: The stability of the system is completely dependent on the eigenvalues of $A$. For continuous time systems, if the eigenvalues are **all** negative, the system is stable. For discrete time systems, if **all** the eigenvalues have a magnitude less than 1, the system is stable.
