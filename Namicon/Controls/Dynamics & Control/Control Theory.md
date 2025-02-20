@@ -169,3 +169,114 @@ So if the value of $\lambda$ is less than 1, the system is stable, else, if it's
 ![](./Assets/stability-discrete-time-complex-plane.png)
 
 Recap: The stability of the system is completely dependent on the eigenvalues of $A$. For continuous time systems, if the eigenvalues are **all** negative, the system is stable. For discrete time systems, if **all** the eigenvalues have a magnitude less than 1, the system is stable.
+
+# Linearizing nonlinear systems
+
+$$
+\dot{x} = f(x)
+$$
+
+If $f$ is a nonlinear function in regards to $x$, how do we turn it into a linear system that we can use for control?
+
+Steps:
+1. Find some fixed points: $\bar{x}$ such that $f(\bar{x}) = 0$ (the system wouldn't move at these fixed points)
+2. Linearize about $\bar{x}$, compute a matrix of PDEs and evaluate it at $\bar{x}$: $\frac{Df}{Dx} \biggr|_{\bar{x}} = \begin{bmatrix}\frac{\partial f_i}{\partial x_j}\end{bmatrix}$. This Jacobian is a matrix of partial derivatives.
+
+$$
+\begin{aligned}
+\dot{x}_1 &= f_1(x_1, x_2) = x_1 + x_2
+\\
+\dot{x}_2 &= f_2(x_1, x_2) = x_1^2 + x_2^2
+\\
+\frac{Df}{Dx} &= \begin{bmatrix} \partial f_1 / \partial x_1 & \partial f_1 / \partial x_2 \\ \partial f_2 / \partial x_1 & \partial f_2 / \partial x_2 
+\end{bmatrix}
+\\
+&= \begin{bmatrix} x_2 & x_1 \\ 2x_1 & 2x_2 \end{bmatrix}
+\end{aligned}
+$$
+
+Basically, we're picking a fixed point $\bar{x}$ and zooming into that fixed point really closely so to the point where the dynamics around the fixed point becomes linear.
+
+$$
+\dot{x} - \dot{\bar{x}} = f(x) = f(\bar{x}) + \frac{Df}{Dx} \biggl|_{\bar{x}} (x - \bar{x}) + \frac{D^2f}{Dx^2} \biggl|_{\bar{x}} (x - \bar{x})^2 + ...
+$$
+
+When we expand the dynamics around the fixed point, we get this power series. However, $f(\bar{x})$ evaluates to 0 because of our first step, and the higher-order terms approaches 0 as we zoom closer and closer into the fixed point ($x - \bar{x}$ approaches 0), so the dynamics will look linear:
+
+$$
+\dot{x} - \dot{\bar{x}} = \frac{Df}{Dx} \biggl|_{\bar{x}} (x - \bar{x}) \rightarrow \Delta\dot{x} = \frac{Df}{Dx} \biggl|_{\bar{x}} \Delta x
+$$
+
+A good control law can keep the system close to these fixed point where the dynamics is linear. There's some catch though. According to the [Hartman-Grobman theorem](https://en.wikipedia.org/wiki/Hartman%E2%80%93Grobman_theorem), the linearization doesn't always characterize the dynamics around a nonlinear system. If all of the eigenvalues of the linearizing matrix around the fixed point has non-zero real parts in them (hyperbolic), then the linearization works. However, if that's not the case (some eigenvalues are purely imaginary), then the linearization fails to capture the dynamics around the fixed point. The nonlinear dynamics could break the linear dynamics around the fixed point, so the linearized dynamics don't capture the nonlinear dynamics.
+
+Example: The pendulum.
+
+![](./Assets/pendulum-linearization-example-physics.png)
+
+The dynamics of the system is described with this nonlinear equation (with $\delta \dot{\theta}$ being the friction):
+
+$$
+\ddot{\theta} = -\frac{g}{L} \sin(\theta) - \delta \dot{\theta}
+$$
+
+This system has 2 basic fixed points at $\theta = 0$ (pendulum downwards) and $\theta = \pi$ (pendulum upwards). Let's introduce some state components into this problem:
+
+$$
+\begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} \theta \\ \dot{\theta} \end{bmatrix}
+$$
+
+And we can compute the rate of change of this state matrix:
+
+$$
+\frac{d}{dt} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} x_2 \\ -(g/L) \sin(x_1) - \delta x_2\end{bmatrix}
+$$
+
+Now, we need to pick fixed points in the system. We have 2 state variables to consider here. $x_2$ is fixed only when it's 0 (so that $\dot{x_1}$ can be 0). And $x_1$ is fixed when it's 0 or $\pi$ (so that $\sin(x_1)$ is 0). So we get 2 fixed points.
+
+$$
+\bar{x} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}, \begin{bmatrix} \pi \\ 0 \end{bmatrix}
+$$
+
+Now we compute the Jacobian of the system's dynamics and pop the $\bar{x}$ into the Jacobian to see what the system looks like.
+
+$$
+\begin{aligned}
+\frac{Df}{Dx} &= \begin{bmatrix} \partial f_1 / \partial x_1 & \partial f_1 / \partial x_2 \\ \partial f_2 / \partial x_1 & \partial f_2 / \partial x_2 \end{bmatrix}
+\\
+&= \begin{bmatrix} 0 & 1 \\ -(g/L)\cos(x_1) & - \delta \end{bmatrix}
+\end{aligned}
+$$
+
+Now, we plug in a fixed point into the Jacobian, which gives us an $A$ matrix for our system linearized around the fixed point. So for the down position ($x_1 = 0$, $\cos(0) = 1$):
+
+$$
+A = \begin{bmatrix} 0 & 1 \\ -g/L & - \delta \end{bmatrix}
+$$
+
+And for the up position ($x_1 = \pi$, $\cos(\pi) = -1$):
+
+$$
+A = \begin{bmatrix} 0 & 1 \\ g/L & - \delta \end{bmatrix}
+$$
+
+With $\delta$ being a small value, the down position is a stable position with eigenvalues $\lambda = \pm i \sqrt{g/L}$, corresponding to oscillations at a natural frequency of $\sqrt{g/L}$. The up position is an unstable saddle position with eigenvalues $\lambda = \pm \sqrt{g/L}$.
+
+We can confirm this using Python. Let's make it simple and set $g/L$ and $\delta$ to constants:
+
+```python
+import numpy as np
+
+d = 0.1
+g_L = 1
+
+Ad = np.matrix(f'0 1 ; -{g_L} {d}')
+Au = np.matrix(f'0 1 ; {g_L} {d}')
+
+d_eig_vals, d_eig_vecs = np.linalg.eig(Ad)
+u_eig_vals, u_eig_vecs = np.linalg.eig(Au)
+
+print(d_eig_vals)
+print(u_eig_vals)
+```
+
+Now, we can add controls to this system to try to stabilize the up position with feedback control.
