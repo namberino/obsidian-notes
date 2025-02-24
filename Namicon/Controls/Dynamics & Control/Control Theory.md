@@ -430,3 +430,76 @@ C = ct.ctrb(A, B)
 print(C)
 print(np.linalg.matrix_rank(C))
 ```
+
+# Reachability and Eigenvalue Placement
+
+Equivalences:
+- The system is controllable
+- Arbitrary poles (eigenvalues) placements ($u = -Kx \rightarrow \dot{x} = (A - BK)x$, we can pick any arbitrary eigenvalues for the closed-loop system $(A - BK)$ and there exists a gain matrix $K$ that turns the closed-loop system in to a system with the desired eigenvalues)
+- Reachability (full reachability in $R^n$, which the state space set containing any possible states for the system): If the system is controllable, we can create a $u(t)$ that allows us to steer the system to any state $x$. The idea is the reachable set, given a $u(t)$, extends to encompass all of $R^n$.
+
+$$
+\begin{aligned}
+\text{Reachable set: } \mathcal{R}_t &= \{ \xi \in R^n \text{ s.t there's an input } u(t) \text{ so that } x(t) = \xi \}
+\\
+\mathcal{R}_t &= R^n
+\end{aligned}
+$$
+
+Take the inverted pendulum for example, we can drive the eigenvalues of the system into the stable side using the pole placement as long as the eigenvalues are distinct. In Python, this can be done like this:
+
+```python
+K = ct.place(A, B, eigs)
+```
+
+# Discrete Time Impulse Response
+
+$$
+x_{k+1} = \tilde{A}x_k + \tilde{B}u_k
+$$
+
+Impulse response is pushing the system in the direction of $u_k$ and measure $x_{k+1}$. For this example, let's set $u_0 = 1$ and all other $u_m = 0$ and measure how the system evolves. We also have an initial $x_0 = 0$, so $x_1 = B u_0 = B$, $x_2 = A x_1 = AB$, ..., $x_m = A^{m-1} B$.
+
+So if we look at $n-1$ matrices in $\mathcal{C}$ and it hits all the direction of $R^n$, then the system is controllable.
+
+If we push the system with $u_k$ and it doesn't reaches all the states in $R^n$, then there's some state that is uncontrollable.
+
+# Degrees of Controllability
+
+We can look at how controllable a system is by looking at the controllability Gramian (which is the SVD of $\mathcal{C}$). We have the dynamical system:
+
+$$
+x(t) = e^{At} +x(0) + \int_0^t e^{A(t - \tau)} Bu(\tau) d\tau
+$$
+
+The integral term is the convolution of $e^{At}$ with $u$. The controllability Gramian is given by this:
+
+$$
+W_t = \int_0^t e^{A\tau} BB^* e^{A^* \tau} d\tau
+$$
+
+$W_t$ is an $n \times n$ matrix. We can eigendecompose this matrix:
+
+$$
+W_t \xi = \lambda \xi
+$$
+
+We can order the eigenvalues from biggest to smallest. The eigenvectors corresponding to the biggest eigenvalues are the most controllable directions in state space (going farther in those direction with the same amount of input energy).
+
+For discrete time systems:
+
+$$
+W_t \approx \mathcal{C}\mathcal{C}^T
+$$
+
+The eigenvalues and eigenvectors in the discrete time matrix are the singular values and singular vectors of $\mathcal{C}$.
+
+$$
+U, \Sigma, V^* = \text{SVD}(\mathcal{C})
+$$
+
+Now, the eigenvalues are the singular vales in the diagonal matrix $\Sigma$ and the eigenvectors are the left singular vectors in $U$. The singular vectors and singular values are stored hierarchically, so the first ones contain the most controllable directions (going farther in that direction with the same amount of input energy).
+
+In control system, some directions are easier to go in and some directions are harder to go in (example: parallel parking is harder to go in than going forward). We can determine these directions with the eigenvalues and eigenvectors of the Gramian controllability matrix.
+
+It's too much to ask for all the states in $R^n$ to be controllable. We want the system to be stabilizable, so all the unstable directions are controllable, which is only true if all the unstable and lightly damped (barely stable) eigenvectors of $A$ are in the controllable subspace (column space of $\mathcal{C}$).
