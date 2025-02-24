@@ -280,3 +280,32 @@ print(u_eig_vals)
 ```
 
 Now, we can add controls to this system to try to stabilize the up position with feedback control.
+
+# Controllability
+
+We can add a control term to try to control the system to get the desired future state:
+
+$$
+\dot{x} = Ax + Bu
+$$
+
+$u$ can be a vector with $q$ elements and $B$ can be an $n \times q$ matrix. $u$ is the input that's fed into the system to control it, and the system will output a $y$, which can also be a vector. For now, we'll assume $y = x$, the state of the system. The output $y$ will be fed back into the input of the system through a loss function $-K x$, which will adjust the input $u$ to minimize the loss. This is optimal for linear systems.
+
+$$
+\dot{x} = Ax - BKx = (A-BK)x
+$$
+
+By choosing $K$, we can drive the dynamical system to be anything we want. This is controllability. The system is *controllable* if we can choose a $u=-Kx$ that can be placed into the system. We can manipulate the eigenvalues of $A$ by changing $K$. So with the right $u$, we can steer the system to anywhere in the state space that we desire.
+
+Often, the system is pre-built, we already have $\dot{x} = Ax + B$. We need to control the system by modifying the control input. However, this is only possible if the system is controllable. $B$ is all the control surfaces (set of actuators) that tells us how the control input affects the forces, and therefore the dynamics and the state of the system.
+
+Depending on the choice of $A$ and $B$, the system maybe easy to control or impossible to control. We need to be able to test whether the choice of $A$ and $B$ will give us a system that's controllable or not. There's a function in Python designed to do this:
+
+```python
+import control as ct
+
+ct.ctrb(A, B)
+```
+
+This Python function from the `control` package was imported directly from Matlab.
+
