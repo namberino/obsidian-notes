@@ -503,3 +503,23 @@ Now, the eigenvalues are the singular vales in the diagonal matrix $\Sigma$ and 
 In control system, some directions are easier to go in and some directions are harder to go in (example: parallel parking is harder to go in than going forward). We can determine these directions with the eigenvalues and eigenvectors of the Gramian controllability matrix.
 
 It's too much to ask for all the states in $R^n$ to be controllable. We want the system to be stabilizable, so all the unstable directions are controllable, which is only true if all the unstable and lightly damped (barely stable) eigenvectors of $A$ are in the controllable subspace (column space of $\mathcal{C}$).
+
+# The PBH Test
+
+The PBH test is a simple test for controllability. It also gives us insight into how and why a system is controllable.
+
+$(A, B)$ is controllable if and only if $\text{rank}(\begin{bmatrix}(A-\lambda I) & B\end{bmatrix}) = n \forall\lambda \in \mathbb{C}$ (for all $\lambda$ in complex plane $\mathbb{C}$).
+
+$(A-\lambda I)$ only have rank $n$ if $\lambda$ is not an eigenvalue of $A$, the determinant will not be 0. So we only need to perform the PBH test with $\lambda$ equal to all the eigenvalues of $A$. If we pick a $\lambda$ value that is equal to an eigenvalue of $A$, we'd have a rank deficient matrix $(A-\lambda I)$, but only in the corresponding eigenvector direction. We need to look at the *null space* to get the eigenvector. The eigenvector is what makes the matrix multiply to equal to 0.
+
+So because $(A-\lambda I)$ is rank deficient, if we want $\text{rank}(\begin{bmatrix}(A-\lambda I) & B\end{bmatrix}) = n$ to be true, $B$ would have to have some complement component pointing in each of the eigenvector directions. That will allow it to be linearly independent from the rank deficient matrix.
+
+If $B$ is a random vector column vector with $n$ elements, $(A, B)$ will be controllable with high probability. If $B$ is an eigenvector of $A$, then $\text{rank}(\begin{bmatrix}(A-\lambda I) & B\end{bmatrix})$ will have rank $n$ for that particular eigenvalue, which is also specified by $\lambda$. However, for all other $\lambda$, $B$ won't really help in any way. So $B$ needs some components in every eigenvectors. If $B$ is random, there's a high probability that it will have some component in all the eigenvectors of $A$.
+
+This also tells us how many control channels are needed to control the system. The PBH test tells us the minimum number of actuator needed to control the system (minimum number of columns in $B$ needed for a given $A$ matrix). If the multiplicity of $\lambda$ is greater than 1 (repeated eigenvalue), then the number of columns in $B$ will increase as there can be more eigenvector directions in the null space of that eigenvalue.
+
+If the eigenvalues of $A$ are distinct, we can get away with having 1 column in $B$ that has a high probability of complementing, and therefore being able to control all of those eigenvector directions. If the multiplicity of an eigenvalue is greater than 1, we need extra columns in $B$ that corresponds to the multiplicity in order to capture those extra directions and fill in the rank.
+
+If we have 2 eigenvalues that are really close to each other or 2 eigenvectors that are really close to each other, then $A-\lambda I$ is approximately degenerate. The system might be controllable, but it will be barely controllable. In these cases, we'd want to have multiple columns of $B$ anyway to boost our control authority.
+
+Recap: This test (although is not commonly computed for all the eigenvalues of $A$) tells us when a system is controllable in terms of the eigenvectors and eigenvalues of $A$. It tells us $B$ needs to align with all the eigenvectors of $A$. If we have a subspace with repeated eigenvalues, we need multiple columns of $B$ to simultaneously control those repeated directions.
