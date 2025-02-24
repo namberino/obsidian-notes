@@ -523,3 +523,41 @@ If the eigenvalues of $A$ are distinct, we can get away with having 1 column in 
 If we have 2 eigenvalues that are really close to each other or 2 eigenvectors that are really close to each other, then $A-\lambda I$ is approximately degenerate. The system might be controllable, but it will be barely controllable. In these cases, we'd want to have multiple columns of $B$ anyway to boost our control authority.
 
 Recap: This test (although is not commonly computed for all the eigenvalues of $A$) tells us when a system is controllable in terms of the eigenvectors and eigenvalues of $A$. It tells us $B$ needs to align with all the eigenvectors of $A$. If we have a subspace with repeated eigenvalues, we need multiple columns of $B$ to simultaneously control those repeated directions.
+
+# Cayley-Hamilton Theorem
+
+Every square matrix $A$ satisfies its own characteristic (eigenvalue) equation.
+
+$$
+\det(A - \lambda I) = 0
+$$
+
+This eigenvalue is only true to special $\lambda$ values that are eigenvalues of $A$. Next, we have this characteristic polynomial, the roots of which are the eigenvalues of the $A$ matrix.
+
+$$
+\lambda^n + a_{n-1}\lambda^{n-1} + ... + a_{2}\lambda^{2} + a_1\lambda + a_0 = 0
+$$
+
+The C-H theorem states that if we plug in the $A$ matrix into this equation, it stays true:
+
+$$
+\begin{aligned}
+&A^n + a_{n-1}A^{n-1} + ... + a_{2}A^{2} + a_1A + a_0 I = 0
+\\
+&A^n = -a_0 I - a_1A - a_{2}A^{2} - ... - a_{n-1}A^{n-1}
+\end{aligned}
+$$
+
+$A^n$ is a linear combination of all those basis matrices. So we have this equation for all larger or equal to $n$ powers of $A$:
+
+$$
+A^{\ge n} = \sum_{j=0}^{n-1} \alpha_j A^j
+$$
+
+So with this equation, we can rewrite the $e^{At}$ term's infinite sum power series as this finite sum of time-variant coefficients of the $A$ matrix:
+
+$$
+\alpha_0(t) I + \alpha_1(t)A + \alpha_{2}(t)A^{2} + ... + \alpha_{n-1}(t)A^{n-1} = 0
+$$
+
+This finite sum representation allows us to show the equivalence of controllability and reachability.
