@@ -309,3 +309,124 @@ ct.ctrb(A, B)
 
 This Python function from the `control` package was imported directly from Matlab.
 
+Let's take a simple linear system for example:
+
+$$
+\begin{bmatrix} \dot{x}_1 \\ \dot{x}_2 \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
+$$
+
+Let's take this $B$ matrix for example:
+
+$$
+B = \begin{bmatrix} 0 \\ 1 \end{bmatrix}
+$$
+
+So our system is:
+
+$$
+\begin{bmatrix} \dot{x}_1 \\ \dot{x}_2 \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 0 \\ 1 \end{bmatrix} u
+$$
+
+From this, we can deduce that $\dot{x}_2$ can be controlled because $u$ is fed directly into the $x_2$ state. $\dot{x}_1$, on the other hand, is decoupled from the system and cannot be controlled by $u$. So we can't stabilize the unstable dynamics, meaning the system is uncontrollable.
+
+To modify this system to be controllable, we can add a control input into the system and modify the $B$ matrix to accommodate the new input:
+
+$$
+B = \begin{bmatrix} 1 & 0 \\0 & 1 \end{bmatrix}; \; u = \begin{bmatrix} u_1 \\ u_2 \end{bmatrix}
+$$
+
+Now our system is:
+
+$$
+\begin{bmatrix} \dot{x}_1 \\ \dot{x}_2 \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 1 & 0 \\0 & 1 \end{bmatrix} \begin{bmatrix} u_1 \\ u_2 \end{bmatrix}
+$$
+
+This system is controllable as both of the state variables are influenced by the input. We have more control authority as we have more actuators and more inputs to tune.
+
+Taking the same original uncontrollable system:
+
+$$
+\begin{bmatrix} \dot{x}_1 \\ \dot{x}_2 \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 0 \\ 1 \end{bmatrix} u
+$$
+
+What we can also do is modify $A$ to have a coupling term:
+
+$$
+A = \begin{bmatrix} 1 & 1 \\ 0 & 2 \end{bmatrix}
+$$
+
+This makes the system becomes controllable because as $u$ control the $x_2$ state, it will also modify the $x_1$ state through that coupling term. So a coupled system could potentially allow us to get away with having relatively few actuators and control inputs.
+
+If we have $A$ and $B$, we can calculate a special controllability matrix $\mathcal{C}$.
+
+$$
+\mathcal{C} = \begin{bmatrix} B & AB & A^2B & ... & A^{n-1}B \end{bmatrix}
+$$
+
+If this $\mathcal{C}$ matrix has full column rank, it's controllable. So in an $n$ dimensional system, if $\mathcal{C}$ has $n$ linearly independent columns, then the system is controllable. Else, there's some direction in the system that are uncontrollable.
+
+This is an impulse response. Basically, we push the system in the $B$ direction and see how that push change the system over time. If all the directions of the $A$ matrix are reached, the system is controllable, else it's uncontrollable.
+
+> If and only if $\text{rank}(\mathcal{C}) = n$, then the system is controllable.
+
+This is quite binary, it doesn't tell us how controllable the system is.
+
+Example: Uncontrollable system
+
+Let's take the original uncontrollable system example:
+
+$$
+\begin{bmatrix} \dot{x}_1 \\ \dot{x}_2 \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 0 \\ 1 \end{bmatrix} u
+$$
+
+The controllability matrix for this is:
+
+$$
+\mathcal{C} = \begin{bmatrix} 0 & 0 \\ 1 & 2 \end{bmatrix}
+$$
+
+Since the system is 2 dimensional, we can just stop here. If we kept going, we'd keep doubling the second state, getting 4, 8, 16, etc. We will always have a row of 0, meaning the matrix doesn't have full column rank as the second column depends on the first column (it's just 2 times the first column), with its rank being 1.
+
+Now let's test out the controllable system:
+
+$$
+\begin{bmatrix} \dot{x}_1 \\ \dot{x}_2 \end{bmatrix} = \begin{bmatrix} 1 & 1 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 0 \\ 1 \end{bmatrix} u
+$$
+
+The controllability matrix for this is:
+
+$$
+\mathcal{C} = \begin{bmatrix} 0 & 1 \\ 1 & 2 \end{bmatrix}
+$$
+
+This matrix has a rank of 2 (non-zero determinant), making it controllable.
+
+A linearized nonlinear system might be uncontrollable. However, it may or may not be nonlinearly controllable, depending on the nonlinear terms. This is cutting edge territory.
+
+If we look at the SVD of $\mathcal{C}$, the singular vectors will be ordered from most controllable states to least controllable states.
+
+Below is the code for the 2 examples:
+
+```python
+import numpy as np
+import control as ct
+
+A = np.matrix('1 0 ; 0 2')
+B = np.matrix('0 ; 1')
+
+C = ct.ctrb(A, B)
+print(C)
+print(np.linalg.matrix_rank(C))
+```
+
+```python
+import numpy as np
+import control as ct
+
+A = np.matrix('1 1 ; 0 2')
+B = np.matrix('0 ; 1')
+
+C = ct.ctrb(A, B)
+print(C)
+print(np.linalg.matrix_rank(C))
+```
