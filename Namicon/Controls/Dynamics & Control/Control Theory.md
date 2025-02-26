@@ -636,3 +636,5 @@ def pendcart(x, t, m, M, L, g, d, uf):
     
     return dx
 ```
+
+This function builds the nonlinear ODEs on the right hand side of $\frac{d}{dt} \underline{x} = \underline{f}(\underline{x})$. It gives us the time derivatives given the state `x` at time `t`. `m` is the mass of the pendulum ball and `M` is the mass of the cart. `L` is the length of the pendulum arm, `g` is the gravitational constant, `d` is the damping term (opposing $\dot{x}$, damping on the cart like friction), and `u` is the control input on the cart.
