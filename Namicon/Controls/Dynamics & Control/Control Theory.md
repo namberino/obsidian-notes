@@ -557,7 +557,82 @@ $$
 So with this equation, we can rewrite the $e^{At}$ term's infinite sum power series as this finite sum of time-variant coefficients of the $A$ matrix:
 
 $$
-\alpha_0(t) I + \alpha_1(t)A + \alpha_{2}(t)A^{2} + ... + \alpha_{n-1}(t)A^{n-1} = 0
+e^{At} = \phi_0(t) I + \phi_1(t)A + \phi_{2}(t)A^{2} + ... + \phi_{n-1}(t)A^{n-1}
 $$
 
-This finite sum representation allows us to show the equivalence of controllability and reachability.
+Cayley-Hamilton theorem's finite sum representation allows us to show that controllability and reachability are equivalent.
+
+If $\xi \in R^n$ is reachable then $\xi = \int^t_0 e^{A(t - \tau)} Bu (\tau) d\tau$ (for some $u(t)$). Now, C-H expression can be put into this integral and then expanded to prove that the reachability is equivalent to the controllability.
+
+$$
+\begin{aligned}
+\xi &= \int_0^t \biggr( \phi_0(t - \tau) u(\tau) IB + \phi_1(t- \tau)u(\tau) AB + \phi_{2}(t- \tau)u(\tau)A^{2}B + ... + \phi_{n-1}(t- \tau)u(\tau)A^{n-1}B \biggl) d\tau
+\\
+&= B \int_0^t \phi_0(t - \tau) u(\tau) d\tau + AB\int_0^t \phi_1(t- \tau)u(\tau)d\tau + A^{2}B \int_0^t \phi_{2}(t- \tau)u(\tau) d\tau + ... + A^{n-1}B \int_0^t\phi_{n-1}(t- \tau)u(\tau) d\tau
+\end{aligned}
+$$
+
+Now each integral terms are just convolution integral, which can be evaluated inside the integral. Therefore, it is possible to evaluate this expression with 2 matrices:
+
+$$
+\xi = \begin{bmatrix} B & AB & ... & A^{n-1}B \end{bmatrix} \begin{bmatrix} \int_0^t \phi_0(t - \tau) u(\tau) d\tau \\ \int_0^t \phi_1(t- \tau)u(\tau)d\tau \\ \int_0^t \phi_{2}(t- \tau)u(\tau) d\tau \\ \vdots \\ \int_0^t\phi_{n-1}(t- \tau)u(\tau) d\tau \end{bmatrix} = \mathcal{C} \begin{bmatrix} \int_0^t \phi_0(t - \tau) u(\tau) d\tau \\ \int_0^t \phi_1(t- \tau)u(\tau)d\tau \\ \int_0^t \phi_{2}(t- \tau)u(\tau) d\tau \\ \vdots \\ \int_0^t\phi_{n-1}(t- \tau)u(\tau) d\tau \end{bmatrix}
+$$
+
+To conclude, $\xi$ can be written as the product of the controllability matrix and the convolution integral of all the time-varying coefficients and the control input.
+
+If $\mathcal{C}$ spans all of the $R^n$ space (has rank $n$), then there exists some coefficients in the convolution integral matrix where if we take the linear combination, we get any key in $R^n$. Essentially, if $\mathcal{C}$ is full rank, we can create a linear combination of $\mathcal{C}$ that can get up to any state in the state space. If it's not full rank then there's no way to create a linear combination that allows us to get to any state.
+
+There's infinitely many $u$ that we can use to get to a desired state $\xi$ if the system is controllable. There's a $u$ that takes us to $\xi$ with a straight, linear path, there's a $u$ that takes us to $\xi$ with a roundabout path, etc. If there are $q$ control inputs, then the number of unique $u$ needed to get to $\xi$ is $n \times q$.
+
+# Inverted pendulum on a cart
+
+![](./Assets/inverted-pendulum-on-a-cart.png)
+
+We want to try to stabilize the inverted pendulum by moving the cart around.
+
+The state of the system:
+- $x$: Position of the cart
+- $\dot{x}$: Velocity of the cart
+- $\theta$: Angle of the pendulum arm
+- $\dot{\theta}$: Angular velocity of the pendulum arm
+
+$$
+\underline{x} = \begin{bmatrix} x \\ \dot{x} \\ \theta \\ \dot{\theta} \end{bmatrix}
+$$
+
+So we get 4 coupled nonlinear ODEs:
+
+$$
+\frac{d}{dt} \underline{x} = \underline{f}(\underline{x}) 
+$$
+
+Fixed points of the system:
+- $\theta = 0$: Pendulum down
+- $\theta = \pi$: Pendulum up
+- $\dot{\theta} = 0$: No pendulum movement
+- $\dot{x} = 0$: No cart velocity
+- $x$ is free: Doesn't matter which position the cart is at
+
+With these equations and fixed points, we can use Euler-Lagrange ($Df/Dx$ evaluated at a fixed point) to compute the Jacobian:
+
+$$
+\frac{d}{dt} \underline{x} = \underline{f}(\underline{x}) \xrightarrow{Df/Dx|_\bar{x}} \underline{\dot{x}} = A\underline{x} + Bu
+$$
+
+$u$ would be the force put on the cart in the $x$ direction.
+
+```python
+def pendcart(x, t, m, M, L, g, d, uf):
+    u = uf(x) # evaluate anonymous function at x
+    Sx = np.sin(x[2])
+    Cx = np.cos(x[2])
+    D = m * L * L * (M + m * (1 - Cx**2))
+    
+    dx = np.zeros(4)
+    dx[0] = x[1]
+    dx[1] = (1 / D) * (-(m**2) * (L**2) * g * Cx * Sx + m * (L**2) * (m * L * (x[3]**2) * Sx - d * x[1])) + m * L * L * (1 / D) * u
+    dx[2] = x[3]
+    dx[3] = (1 / D) * ((m + M) * m * g * L * Sx - m * L * Cx * (m * L * (x[3]**2) * Sx - d * x[1])) - m * L * Cx * (1 / D) * u;
+    
+    return dx
+```
