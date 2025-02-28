@@ -586,6 +586,8 @@ There's infinitely many $u$ that we can use to get to a desired state $\xi$ if t
 
 # Inverted pendulum on a cart
 
+## Dynamics
+
 ![](./Assets/inverted-pendulum-on-a-cart.png)
 
 We want to try to stabilize the inverted pendulum by moving the cart around.
@@ -638,3 +640,20 @@ def pendcart(x, t, m, M, L, g, d, uf):
 ```
 
 This function builds the nonlinear ODEs on the right hand side of $\frac{d}{dt} \underline{x} = \underline{f}(\underline{x})$. It gives us the time derivatives given the state `x` at time `t`. `m` is the mass of the pendulum ball and `M` is the mass of the cart. `L` is the length of the pendulum arm, `g` is the gravitational constant, `d` is the damping term (opposing $\dot{x}$, damping on the cart like friction), and `u` is the control input on the cart.
+
+## Pole placement
+
+There's a couple of positive eigenvalues in $A$, which means they're unstable. We want to drive these eigenvalues to a stable position by using the `place` command:
+
+```python
+poles = [-1.1, -1.2, -1.3, -1.4]
+K = ct.place(A, B, poles)
+```
+
+This will create a $K$ controller gain that will stabilize the system. Now, if we try to get the eigenvalues of the system with $K$, we get our specified stable eigenvalues:
+
+```python
+np.linalg.eig(A - B * K)
+```
+
+This is only possible with a controllable system. To make the control more aggressive, we can move the poles further into the negative side. However, it will put more strains on the actuators. If we move it too far into the negative side, the system actually becomes unstable as it becomes less robust. There's a sweet spot where the trade off between the performance and the control effort is minimal.
