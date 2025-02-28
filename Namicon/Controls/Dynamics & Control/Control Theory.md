@@ -657,3 +657,25 @@ np.linalg.eig(A - B * K)
 ```
 
 This is only possible with a controllable system. To make the control more aggressive, we can move the poles further into the negative side. However, it will put more strains on the actuators. If we move it too far into the negative side, the system actually becomes unstable as it becomes less robust. There's a sweet spot where the trade off between the performance and the control effort is minimal.
+
+## Linear Quadratic Regulator (LQR)
+
+The LQR gives us the optimal gain matrix $K$, that balances between performance and control effort. The LQR basically is a cost function for the performance of the controller. We can also put a cost on the actuation.
+
+$$
+J = \int_0^{t} x^T(\tau) Q x(\tau) + u^T(\tau) R u(\tau) d\tau
+$$
+
+> Note: We just integrate for a while, not to infinity.
+
+The $Q$ matrix ($n \times n$) tells us how much of a penalty it is if $x$ is not where we need it to be and the $R$ matrix ($m \times m$) tells us how much of a penalty it is if $u$ spends too much energy. $Q$ is non-negative. We integrate with respect to $t$ because both $x$ and $u$ are functions of $t$. The 2 penalty terms will be added together. If the system's state is not where we want it to be, $x^T Q x$ will be big. We need to stabilize the the system to the desired state quickly if we want it to be small. If the controller spends too much energy to get to the desired state, $u^TRu$ will be big. $Q$ and $R$ are diagonal matrices that tells us how much to penalize if the system and controller is not following our order. The larger the value, the more we penalize it. Smaller value means we want the controller to be more aggressive.
+
+For our case, we have 4 state variables in the state vector, so we need a $4\times 4$ matrix for $Q$ and 1 control input so $R$ is just 1 variable. We can do this using this command in Python:
+
+```python
+from control.matlab import *
+
+K = lqr(A, B, Q, R)
+```
+
+Note: LQR has a time complexity of $O(n^3)$, so for larger systems with larger state variables, it's not optimal to use LQR.
