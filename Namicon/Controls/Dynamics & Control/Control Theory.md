@@ -679,3 +679,6 @@ K = lqr(A, B, Q, R)
 ```
 
 Note: LQR has a time complexity of $O(n^3)$, so for larger systems with larger state variables, it's not optimal to use LQR.
+
+# Observability
+
