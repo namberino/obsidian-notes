@@ -682,3 +682,21 @@ Note: LQR has a time complexity of $O(n^3)$, so for larger systems with larger s
 
 # Observability
 
+In real life, we don't always have access to the full state of the system. We probably have access to some limited state measurements $y$ ($y\in R^p$ with $p$ being much less than $n$).
+
+$$
+y = C x
+$$
+
+In many cases, even with a big system, maybe a 1 million dimensional system, we can still get full estimation with 1 measurement of the state. This is the observability of the system.
+
+$$
+\text{obsv}(A, C)
+$$
+
+The calculation here is almost identical the the calculation in $\text{ctrb}(A, B)$. While controllability means can we steer the system anywhere with some $u$, observability means can we estimate any state $\underline{x}$ from measurements $y(t)$.
+
+![](./Assets/full-state-estimation-control-diagram.png)
+
+Note: I made a mistake while drawing this diagram, you also need to put $u$ into the full-state estimator because we need to know how we're changing the system in order to estimate the full state of the system. So the diagram needs an arrow going from the LQR output into the full-state estimator.
+
