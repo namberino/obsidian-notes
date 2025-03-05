@@ -700,3 +700,106 @@ The calculation here is almost identical the the calculation in $\text{ctrb}(A, 
 
 Note: I made a mistake while drawing this diagram, you also need to put $u$ into the full-state estimator because we need to know how we're changing the system in order to estimate the full state of the system. So the diagram needs an arrow going from the LQR output into the full-state estimator.
 
+If the matrix from this calculation has rank $n$, spanning the state space, we can develop an optimal full-state estimator. The full-state estimator will take in the control inputs $u$ and measurements $y$ and output $\hat{x}$, which is the estimated full state of the system. This estimator is a dynamical system:
+
+$$
+\begin{aligned}
+\frac{d}{dt} \hat{x} &= A \hat{x} + Bu + K_f (y - \hat{y})
+\\
+\hat{y} &= C \hat{x}
+\end{aligned}
+$$
+
+$K_f$ is a gain matrix for the estimator, $\hat{y}$ is the estimated measurements. Every time we get new measurements, we compare it with the estimated measurements and correct the full state based on the difference between the 2.
+
+$$
+\begin{aligned}
+\frac{d}{dt} \hat{x} &= A \hat{x} + Bu + K_f (y - \hat{y})
+\\
+&=A \hat{x} + Bu + K_f y - K_f C \hat{x}
+\\
+&= (A -  K_f C) \hat{x} + Bu + K_f y
+\\
+&= (A -  K_f C) \hat{x} + \begin{bmatrix}B & K_f\end{bmatrix}  \begin{bmatrix}u \\ y\end{bmatrix}
+\end{aligned}
+$$
+
+Now, we want to make the dynamics $A - K_fC$ of $\hat{x}$ stable. If they are stable, then $\hat{x}$ will stably converge to $x$. If $A$ and $C$ are observable, we can choose $K_f$ and place the eigenvalues of the dynamics matrix anywhere we want.
+
+Error of the estimation:
+
+$$
+\varepsilon = x - \hat{x}
+$$
+
+We want the error to go to 0.
+
+$$
+\begin{aligned}
+\frac{d}{dt} \varepsilon &= \frac{d}{dt} x - \frac{d}{dt} \hat{x}
+\\
+&= Ax + Bu - \biggr((A -  K_f C) \hat{x} + \begin{bmatrix}B & K_f\end{bmatrix}  \begin{bmatrix}u \\ y\end{bmatrix}\biggl)
+\\
+&= Ax + Bu - A\hat{x} +  K_f C \hat{x} - Bu - K_f y
+\\
+&= A (x - \hat{x}) + K_f C\hat{x} - K_f Cx
+\\
+&= A (x - \hat{x}) + K_f C(\hat{x} - x)
+\\
+&= A (x - \hat{x}) - K_f C(x - \hat{x})
+\\
+&= (A- K_f C) (x - \hat{x})
+\\
+&= (A- K_f C) \varepsilon
+\end{aligned}
+$$
+
+If the system is observable, we can place the eigenvalues into the estimator by choosing $K_f$ and driving the error between the true full state and the estimated full state to 0.
+
+There's always going to be some measurement noise and system noise when measuring the system.
+
+$$
+\begin{aligned}
+y &= C x + w_n
+\\
+\dot{x} &= Ax + Bu + w_d
+\end{aligned}
+$$
+
+With $w_n$ being the measurement noise and $w_d$ being the disturbance noise in the system. We find the optimal $K_f$ to find the optimal negative eigenvalues of the estimator's dynamical system given some knowledge about the magnitude of disturbances and the magnitude of the sensor noise.
+
+# The Kalman Filter
+
+The Kalman filter is the analog of the LQR for full-state estimation. It's the optimal full-state estimator given some knowledge about the noise and disturbances.
+
+We assume $w_d$ ($n \times n$) is a Gaussian white noise with variance $V_d$, $w_n$ is also a Gaussian white noise with variance $V_n$. If $w_d$ is larger or smaller than the $w_n$ than we can trust one or the other more.
+
+If the system has bad sensor noise, the estimator can't trust $y$ very much, it has to rely on the system model. If the system has big disturbances then it should trust $y$ more.
+
+The eigenvalues in the estimator system minimizes a lost function:
+
+$$
+J = \lim_{t \rightarrow \infty} \mathcal{E}\biggr( (x(t) - \hat{x}(t))^T (x(t) - \hat{x}(t)) \biggl)
+$$
+
+With $\mathcal{E}$ being the expected error between $x$ and $\hat{x}$. We want to choose $K_f$ such that it minimizes this loss function.
+
+$K_f$ can be calculated using a process similar to $K_r$ of the LQR.
+
+$$
+K_f = Y C^T V_n^{-1}
+$$
+
+Where $Y$ is the solution to another Riccati equation:
+
+$$
+YA^T + AY − Y C^T V^{−1}_n CY + V_d = 0
+$$
+
+Python computation:
+
+```python
+from control.matlab import *
+
+Kf = lqe(A, I, C, Vd, Vn)
+```
