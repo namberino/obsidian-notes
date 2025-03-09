@@ -808,7 +808,7 @@ Kf = lqe(A, I, C, Vd, Vn)
 
 ![](./Assets/lqe-lqr-system-diagram.png)
 
-If we have a linear system that's controllable and observable, we can develop an LQR and LQE to optimally estimate the full state of the system and control the system even when there's some Gaussian noise and disturbances. This is called the Linear Quadratic Gaussian (LQG) control. There are some limitations to this and is the motivation for robust control.
+If we have a linear system that's controllable and observable, we can develop an LQR and LQE to optimally estimate the full state of the system and control the system even when there's some Gaussian noise and disturbances. This is called the Linear Quadratic Gaussian (LQG) regulator. There are some limitations to this and is the motivation for robust control.
 
 $$
 \begin{aligned}
@@ -833,4 +833,16 @@ $$
 Even when we combine the LQR and LQE systems, the eigenvalues of the full state $x$ is still stabilized by the LQR controller $(A-BK_r)$, and the eigenvalues for the error of the estimation $\varepsilon$ is given by the LQE estimator $(A-K_fC)$.
 
 This is called the *separation principal*. We can design the LQR and the LQE separately and when we combine them, we can still retain the desirable properties of the 2 separate systems.
+
+Below is a Simulink simulation of the LQG for the inverted pendulum on a cart. Here, the system stabilizes to $x = 0; \; \dot{x} = 0;\; \theta = \pi; \; \dot{\theta} = 0$. At time $t = 10$, the system goal will changed to stabilize the system at $x = 1$ instead of 0.
+
+Note that the `Gain1` block is just $y=Cx$ and the `State-Space` block is the Kalman filter.
+
+![](./Assets/simulink-lqg-inverted-pendulum.png)
+
+# Robust control
+
+Optimal control is one of the most used state-space methods. In [this paper](https://murray.cds.caltech.edu/images/murray.cds/b/b4/Guaranteed_margins_for_LQG_regulators_-_doyle.pdf), depending on the system and the type of noise and disturbances, the LQG regulator might be arbitrarily sensitive to model uncertainty and time delay (arbitrarily non-robust).
+
+The stability of the system doesn't guarantee that the system is robust and won't blow up if there's some model uncertainty. The *performance* of the system is the eigenvalues of the system and how fast we can estimate the state. The *robustness* of the system measures how sensitive the system is to model uncertainties, time delays, disturbances, etc. An LQG can have high performance but not a lot of robustness.
 
