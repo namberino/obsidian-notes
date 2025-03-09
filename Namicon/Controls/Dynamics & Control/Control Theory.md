@@ -868,5 +868,86 @@ $$
 \end{aligned}
 $$
 
-The idea is if we Laplace transform the state-space dynamics then we get the transfer function representation in terms of a variable $s$ ($G(s)$) that tells us how the output look like given a certain input (such as a sine input).
+The idea is if we Laplace transform the state-space dynamics then we get the transfer function representation in terms of a variable $s$ ($G(s)$, with $s$ living in the complex plane) that tells us how the output look like given a certain input (such as a sine input).
 
+# Bode Plot (for Spring-Mass Damper)
+
+ For the spring-mass damper system, we have this system:
+
+![](./Assets/spring-mass-damper-system-diagram.png)
+
+Dynamics:
+
+$$
+m \ddot{x} + d \dot{x} + kx = u
+$$
+
+Now we can take the Laplace transform of this dynamics. Recall the Laplace transform of $\dot{x}$. With $\bar{x}$ being $x$ in the Laplace transform domain:
+
+$$
+\mathcal{L}(\dot{x}) = s \bar{x}(s) - x(0)
+$$
+
+Assuming the initial condition $x(0) = 0$:
+
+$$
+\mathcal{L}(\ddot{x}) = s^2 \bar{x}(s)
+$$
+
+Let's say our system has these conditions:
+
+$$
+1 \ddot{x} + 1 \dot{x} + 1x = u
+$$
+
+We can solve this ODE by plugging in $e^{\lambda t}$ to get the characteristic polynomial. If use Laplace transform on both sides, we get something similar to the characteristic polynomial.
+
+$$
+\begin{aligned}
+s^2 \bar{x}+ s\bar{x} +\bar{x} &= \bar{u}
+\\
+(s^2 + s + 1) +\bar{x} &= \bar{u}
+\\
+\frac{\bar{x}}{\bar{u}} = \frac{1}{s^2 + s + 1} &= G(s)
+\end{aligned}
+$$
+
+We get this transfer function $G(s)$, which maps input $u$ to output $x$. Now we can plug in $i\omega$ for all $\omega$ frequencies and compute the magnitude $A$ and the phase $\phi$.
+
+At arbitrarily low $\omega$ frequencies, the amplitude is 1 and the phase is 0, it perfectly captures the wave. With higher $\omega$ frequencies, the amplitude gets smaller and the phase reaches $-180\degree$. In the middle $\omega$ frequencies, there's a resonance frequency where the amplitude goes up and the phase pass through the $90\degree$ mark.
+
+This is the Bode plot (Frequency response plot).
+
+![](./Assets/bode-plot-spring-mass-damper-system.png)
+
+This is why the transfer function is so useful. If we have a transfer function, we can plug in $i\omega$, sweep through a bunch of different $\omega$, and find the amplitude and phase for each of those $\omega$.
+
+# The Laplace Transform
+
+When we use the Laplace transform on a state-space representation, we get the transfer function for that system.
+
+Recall that the Laplace transform is just a Fourier transform that's generalized to functions that grow or decay exponentially and not bounded by $\pm \infty$.
+
+$$
+\begin{aligned}
+\mathfrak{L}(x(t)) &=  \int_{0}^{\infty} x(t) e^{-s t} dt = \bar{x}(s)
+\\
+\mathfrak{L}^{-1}(\bar{x}(s)) &= \frac{1}{2\pi i} \int_{\gamma - i\infty}^{\gamma + i\infty} \bar{x}(s) e^{s t} ds
+\end{aligned}
+$$
+
+Important property:
+
+$$
+\begin{aligned}
+\mathfrak{L}(\dot{x}(t)) &=  \int_{0}^{\infty} \dot{x}(t) e^{-s t} dt 
+\\
+&= [e^{-st} x]^{\infty}_0 + s\int_0^{\infty} xe^{-st} dt
+\\
+&= 0 - x(0) + s \mathcal{L}(x(t))
+\\
+&= s \bar{x}(s) - x(0)
+\end{aligned}
+$$
+
+Derivatives becomes polynomials in the Laplace domain.
