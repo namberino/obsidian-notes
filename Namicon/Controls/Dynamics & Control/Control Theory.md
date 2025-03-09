@@ -803,3 +803,34 @@ from control.matlab import *
 
 Kf = lqe(A, I, C, Vd, Vn)
 ```
+
+# Linear Quadratic Gaussian (LQG)
+
+![](./Assets/lqe-lqr-system-diagram.png)
+
+If we have a linear system that's controllable and observable, we can develop an LQR and LQE to optimally estimate the full state of the system and control the system even when there's some Gaussian noise and disturbances. This is called the Linear Quadratic Gaussian (LQG) control. There are some limitations to this and is the motivation for robust control.
+
+$$
+\begin{aligned}
+\varepsilon &= x - \hat{x}
+\\
+\hat{x} &= x - (x - \hat{x})
+\\
+\dot{x} &= Ax - BK_r \hat{x} + w_d
+\\
+& = Ax - BK_r x + BK_r (x - \hat{x}) + w_d
+\\
+\dot{\varepsilon} &= (A - K_f C) \varepsilon + w_d - K_f w_n
+\end{aligned}
+$$
+
+Now we want to build a state space equation that stabilize the full state $x$ and error of the estimation $\varepsilon$:
+
+$$
+\frac{d}{dt} \begin{bmatrix} x \\ \varepsilon \end{bmatrix} = \begin{bmatrix} (A - BK_r) & BK_r \\ 0 & (A - K_fC) \end{bmatrix} \begin{bmatrix} x \\ \varepsilon \end{bmatrix} + \begin{bmatrix} I & 0 \\ I & -K_f \end{bmatrix} \begin{bmatrix} w_d \\ w_n \end{bmatrix}
+$$
+
+Even when we combine the LQR and LQE systems, the eigenvalues of the full state $x$ is still stabilized by the LQR controller $(A-BK_r)$, and the eigenvalues for the error of the estimation $\varepsilon$ is given by the LQE estimator $(A-K_fC)$.
+
+This is called the *separation principal*. We can design the LQR and the LQE separately and when we combine them, we can still retain the desirable properties of the 2 separate systems.
+
