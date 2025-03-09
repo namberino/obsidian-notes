@@ -846,3 +846,27 @@ Optimal control is one of the most used state-space methods. In [this paper](htt
 
 The stability of the system doesn't guarantee that the system is robust and won't blow up if there's some model uncertainty. The *performance* of the system is the eigenvalues of the system and how fast we can estimate the state. The *robustness* of the system measures how sensitive the system is to model uncertainties, time delays, disturbances, etc. An LQG can have high performance but not a lot of robustness.
 
+# Equivalent Representations of Linear Systems
+
+There are 3 equivalent representations of linear systems: State-space ODEs ($\dot{x} = Ax + Bu$; $y = Cx$), Frequency domain transfer functions ($G(s) =  C(sI-A)^{-1} B$), and Time-domain impulse response convolution ($y(t) = \int_0^t h(t-\tau)u(\tau)d\tau$). Sometimes one of the is better than the other. If we have physics for the system with ODEs, it might be better to use state-space representations. If we have data from an experiment (like whacking a system to see how it respond), we can use the impulse response convolution to get the properties of the system then build out the other representations. The transfer function allow us to understand the balance between robustness and performance.
+
+We have system that maps the input $u$ to the output $y$. This system is called a transfer function. We call this transfer function $G$.
+
+![](./Assets/3-equivalent-representations-linear-systems.png)
+
+A system $u_1 \rightarrow y_1; \; u_2 \rightarrow y_2$ is linear if  $u_1 + u_2 \rightarrow y_1 + y_2$. For linear systems, we can choose any of the 3 representations for the system.
+
+For the transfer function, if we input for example a sine wave $\sin(\omega t)$, we get out an output of $\sin(\omega t)$ whose amplitude might have been scaled by $A$ and whose phase might have been shifted by $\phi$: $A\sin(\omega t + \phi)$.
+
+The transfer function is a complex function with the below properties:
+
+$$
+\begin{aligned}
+|G(i\omega)| = A
+\\
+\angle G(i\omega) = \phi
+\end{aligned}
+$$
+
+The idea is if we Laplace transform the state-space dynamics then we get the transfer function representation in terms of a variable $s$ ($G(s)$) that tells us how the output look like given a certain input (such as a sine input).
+
