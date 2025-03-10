@@ -1009,3 +1009,76 @@ $$
 $$
 
 Impulse response $y(t)$ given $u = \delta(t)$ equals to $\mathcal{L}^{-1}(G(s))$.
+
+# Sensitivity
+
+Loop transfer function property:
+
+$$
+L = PK
+$$
+
+Note: The order here is important, since $K$ is fed into $P$, it goes on the right.
+
+![](./Assets/loop-transfer-function-diagram.png)
+
+The error $\varepsilon$ depends on the loop transfer function $L = PK$.
+
+$$
+\begin{aligned}
+y &= P_d d + PK \varepsilon = P_d d + PK(r - (y + n)) = P_d d + PK(r - y - n)
+\\
+Iy + PKy &= P_d d + PKr - PKn
+\\
+(I+PK)y &= P_d d + PKr - PKn
+\\
+y &= (I+PK)^{-1} P_d d + (I+PK)^{-1}PKr - (I+PK)^{-1}PKn
+\\
+y &= SP_dd + Tr - Tn
+\end{aligned}
+$$
+
+So the noisy measurement can be described like this:
+
+$$
+y_m = SP_dd + Tr - Tn +n = SP_dd + Tr + Sn
+$$
+
+We want to design a $K$ such that the transfer functions have desirable effects. We want to design $K$ so that the disturbance term is small for low frequencies, the reference tracking term performs well for low frequencies ($y = r$), and the noise term is small for high frequencies (where noise is important). This tells us how the disturbances, noise, and references influence the output of the system.
+
+We can define the sensitivity $S$ and complementary sensitivity $T$ as this. We want $K$ to give $S$ and $T$ desirable properties: *reference tracking*, *disturbance rejection*, *noise attenuation*.
+
+$$
+\begin{aligned}
+S &= (I+PK)^{-1} = (I+L)^{-1}
+\\
+T &= (I+PK)^{-1} PK = (I+L)^{-1} L
+\\
+S &+ T = I
+\end{aligned}
+$$
+
+We can plug the loop transfer function into the error calculation. We want $\varepsilon$ to be close to or equal to 0:
+
+$$
+\varepsilon = r - y - n = r - SP_dd - Tr + Tn - n= Sr - SP_dd - Sn
+$$
+
+We want the reference tracking to be accurate. For high frequencies, the reference tracking can't be super accurate since it's going too fast, so we want $|S|$ to be small at low frequencies.
+
+We want the disturbance to be rejected. For arbitrarily high frequencies, we can't really reject all of the disturbances. For low frequencies, we will be able to keep the error low for the disturbance rejection, so we also want $|S|$ to be small at low disturbance frequencies.
+
+We want the noise to be attenuated. Noise generally has very high frequencies. For high frequencies, we want to reject all the noise. For low frequencies, we don't really need to care about the noise, so we want $|T|$ to be small at high noise frequencies.
+
+We can't really reject high frequency noise from from the error signal since it acts on the the error signal with a negative sign. We can reject it from the output $y$ since it contains the complementary sensitivity for noise.
+
+$$
+\varepsilon = r - y = Sr - SP_dd + Tn
+$$
+
+At the frequency where the sensitivity begins to get large and the complementary sensitivity begins to get small, that is called the *cross-over frequency*. This make sense because $S$ and $T$ have to add up to $I$.
+
+![](./Assets/sensitivity-cross-over-frequency.png)
+
+If we want to track faster references and faster disturbances, we need to reduce the noise in the measurement. If we want to attenuate higher noise, we need to slow down the reference and reduce the disturbances.
+
