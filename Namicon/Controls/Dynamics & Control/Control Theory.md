@@ -1205,3 +1205,23 @@ Characteristics:
 An example of a system with non-minimum phase is an aircraft. When we use the tail elevator to try to go up, we actually lower the center of mass and dip down a bit first before going up, although the dip is very minor.
 
 This behavior is similar to a time delay (not exactly like time delay though). The worse the non-minimum phase system is, the less robust the system will be to fast changes and we have to settle for slower, more gradual control.
+
+# Model Predictive Control (MPC)
+
+![](./Assets/mpc-diagram.png)
+
+Given a system model, we run forecasts of the model in time for different actuation strategies $u$ and optimize the control input $u$ over a short period of time called the *horizon* and determine the immediate control action based on the optimization. Once that control action is applied, we move the system forward, re-optimize to find the next control input. We get very good control even for nonlinear systems.
+
+$$
+K (x_k) = u_{k+1}(x_k)
+$$
+
+$u_{k+1}(x_k)$ is the optimal short-time control starting at $x_k$. We initialize the optimization at $x_k$, figure out the long trajectory of $u$'s that would optimize the objective function, starting at the initial condition, given the model, and only implement the first time step $u_{k+1}$. When $x_k$ moves to $x_{k+1}$, we re-optimize a new control trajectory starting at $x_{k+1}$ and implement the first input of the control strategy and repeat.
+
+This is powerful because:
+- Can impose constraint bounds (max and min values) on the state of the system and the input.
+- Works for nonlinear systems (directly optimize the nonlinear equations)
+- Optimization is at the heart of MPC
+- More flexible than traditional linear control methods
+
+MPC is quite expensive and it relies on fast hardware and having a model.
