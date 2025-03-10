@@ -1150,3 +1150,58 @@ $$
 
 The closer $L$ is to -1, the larger $S$ will be. $|S|$ will be very big at those frequencies. A lot of the robust control design is making the loop transfer function $L$ have the desired properties while having the maximum peak of $S$ pushed down as low as possible.
 
+# Limitations of Robustness
+
+Let $m$ be the minimum distance from the stability margin where the system becomes not robust.
+
+$$
+\max_\omega|S| = \frac{1}{m}
+$$
+
+So a peak of 10 would mean the loop transfer function is only 0.1 distance away from the margin. The bigger the peak, the closer the minimum distance. We don't want the system to have a big peak.
+
+We want to move the model as far away from the margin as possible so that even if there's some uncertainties in the model or some disturbances or time delays, the system wouldn't blow up, so we need the peak of $|S|$ to be small.
+
+Time delays and right half plane zeros of $P$ (eg. $\frac{S - 1}{S^2}$ has a zero in the numerator in the right half plane. Doing a response on this transfer function would make the system go in the wrong direction first for a little bit before going back in the right direction, so it kinda acts like a time delay) gives us the fundamental limits on how small $\max|S|$ can be, so some fundamental lack of robustness. Solving this problem means moving the bandwidth to be lower frequencies, giving us a fundamental limit on how high the bandwidth can be before we lose robustness.
+
+# Cautions about inverting plant dynamics
+
+In general, inverting plant dynamics is a bad idea.
+
+Example:
+
+$$
+P = \frac{S + 10}{S - 5}
+$$
+
+This is an unstable plant, it has a pole at +5 on the right half plane and a 0 in the left half plane at -10. A pole on the RHP means the system is unstable because $e^{5t}$ blows up. Inverting this plant with $K$ gives us this:
+
+$$
+K = \frac{S-5}{S+10}
+$$
+
+So $PK = 1$. Let's say the true plant has a bit different dynamics:
+
+$$
+P = \frac{S + 10}{S - 5 + \varepsilon}
+$$
+
+So instead of having a pole at +5, we have a pole that's very near +5, but not on +5.
+
+$$
+P_{true}K = \frac{S-5}{S-5+\varepsilon}
+$$
+
+Now, the system is still unstable and have a pole near +5, but we also have a zero in the RHP at +5, right next to the pole. This unstable mode is nearly unobservable as anything near the zero in the RHP is very hard to observe. So even if the system is blowing up, the measurement won't tell us that it's blowing up.
+
+# Non-minimum phase dynamics
+
+Non-minimum phase gives us a fundamental limit on the robustness of the system.
+
+Characteristics:
+- RHP zero
+- The impulse response or the step response goes in the wrong direction at first then goes in the right direction.
+
+An example of a system with non-minimum phase is an aircraft. When we use the tail elevator to try to go up, we actually lower the center of mass and dip down a bit first before going up, although the dip is very minor.
+
+This behavior is similar to a time delay (not exactly like time delay though). The worse the non-minimum phase system is, the less robust the system will be to fast changes and we have to settle for slower, more gradual control.
