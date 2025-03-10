@@ -1082,3 +1082,71 @@ At the frequency where the sensitivity begins to get large and the complementary
 
 If we want to track faster references and faster disturbances, we need to reduce the noise in the measurement. If we want to attenuate higher noise, we need to slow down the reference and reduce the disturbances.
 
+# Loop shaping
+
+For $S$ to be small, we need to make $L$ big. For $T$ to be small, we need to make $L$ small. $L$ is like an integrator now.
+
+$$
+L = \frac{1}{S}
+$$
+
+We want to create a $K$ such that $L$ looks like an integrator $1/S$. We can move this integrator left or right by multiplying it with a bandwidth term $w_B$:
+
+$$
+L = \frac{w_B}{S}
+$$
+
+Moving it to the right gives us higher frequency reference tracking and disturbance rejection. Moving to the left gives us low frequency noise attenuation, settling for lower bandwidth performance.
+
+The crossover frequency is where the bandwidth hit a bandwidth of $0dB$. If the sensitivity $S$ has some bump (highest peak) near the crossover frequency, that's bad. We need to design $K$ such that it decreases that bump.
+
+Example: Cruise control
+
+$$
+P(s) = \frac{1}{S + 1}
+$$
+
+We have this transfer function for the dynamical car model. We want our loop transfer function to look like this:
+
+$$
+\begin{aligned}
+L = PK &= \frac{w_B}{S}
+\\
+\frac{1}{S + 1} K &= \frac{w_B}{S}
+\\
+K &= \frac{(S+1 )w_B}{S}
+\end{aligned}
+$$
+
+We basically inverted our plant to make the loop transfer function $L$ look like an integrator. For many times, if the plan has the right half plane pole and we invert the plant, we get a right half plane 0 and get an unstable system that's also unobservable where the system is unstable. So don't do this inverting plant thing. We'll need to "robustify" this later.
+
+# Robustness
+
+*Nyquist stability criterion*: We want the loop transfer function to be as far from the point -1 in the complex plan as possible for all frequencies.
+
+If we take $L(i\omega)$ for all $\omega$ frequencies, the closer the result is to -1, the less robust the closed-loop system will be. The -1 is the stability margin. Passing the stability margin will make the system become unstable.
+
+![](./Assets/nyquist-stability-criteria-plot.png)
+
+If we increase $K$, the loop transfer function will grow until it goes pass the stability margin and make the closed-loop system become unstable. Similarly, if the plant model $P$ has some uncertainty, it could also cause the loop transfer function to be bigger and grow pass the stability margin. The farther we are from the margin, the more robust the system is.
+
+Note that time delay in the system could cause the output of the loop transfer function to "rotate" on the plot and touch or go pass the margin.
+
+Why is the -1 point so special?
+
+$$
+y = \frac{PK}{1 + PK} r
+$$
+
+This is a model of a simple proportional feedback control system. If $L = PK$ is close to -1, the denominator term blows up, causing the system to follow suit. For more information on this, check [this](https://en.wikipedia.org/wiki/Nyquist_stability_criterion).
+
+Recap: The farther the loop transfer function's result is from the stability margin -1, the more robust the system is, the more we can handle un-modeled dynamics in $P$, the more we can increase $K$ to get more performance, the more time delays we can handle.
+
+Example: SISO system:
+
+$$
+S = \frac{1} {1 + L}
+$$
+
+The closer $L$ is to -1, the larger $S$ will be. $|S|$ will be very big at those frequencies. A lot of the robust control design is making the loop transfer function $L$ have the desired properties while having the maximum peak of $S$ pushed down as low as possible.
+
