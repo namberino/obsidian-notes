@@ -950,4 +950,62 @@ $$
 \end{aligned}
 $$
 
-Derivatives becomes polynomials in the Laplace domain.
+Derivatives becomes polynomials in the Laplace domain. 
+
+Now let's try taking the Laplace transform of this $(*)$ equation:
+
+$$
+\begin{aligned}
+\dot{x} &= Ax + Bu
+\\
+y &= Cx
+\end{aligned}
+$$
+
+Laplace transform:
+
+$$
+\begin{aligned}
+\mathcal{L}(*) &\rightarrow \; ?
+\\
+s\bar{x}(s) - x(0) &= A \bar{x}(s) + B \bar{u}(s)
+\\
+\bar{y}(s) &= C \bar{x}(s)
+\end{aligned}
+$$
+
+Now we solve for $\bar{x}(s)$:
+
+$$
+\begin{aligned}
+\bar{y}(s) &= C\bar{x}(s)
+\\
+\bar{x}(s) &= \frac{\bar{y}(s)}{C}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+sI\bar{x}(s) - A \bar{x}(s) &=  B \bar{u}(s) + x(0)
+\\
+(sI- A) \bar{x}(s) &=  B \bar{u}(s) + x(0)
+\\
+\bar{x}(s) &= (sI- A)^{-1} B\bar{u}(s) + x(0)
+\\
+\frac{\bar{y}(s)}{C} &= (sI- A)^{-1} B\bar{u}(s) + (sI- A)^{-1} x(0)
+\\
+\bar{y}(s) &= C (sI- A)^{-1} B\bar{u}(s) + C(sI- A)^{-1} x(0)
+\end{aligned}
+$$
+
+Assuming $x(0) = 0$, we get the transfer function that maps $\bar{u}$ to $\bar{y}$:
+
+$$
+\begin{aligned}
+\bar{y}(s) &= C (sI- A)^{-1} B\bar{u}(s)
+\\
+\bar{y}(s) &= G(s) \bar{u}(s)
+\end{aligned}
+$$
+
+Impulse response $y(t)$ given $u = \delta(t)$ equals to $\mathcal{L}^{-1}(G(s))$.
