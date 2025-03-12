@@ -42,4 +42,4 @@ The percentages are then used to scale the 1st encoded word's output and 2nd enc
 
 The word with the highest probability in the fully-connected layer's output is then fed back into the decoder's input and we repeat the process until we get `<EOS>` or hit the max output length.
 
-Note that with attention added into the model, we don't entirely need the LSTMs anymore. 
+Note that with attention added into the model, we don't entirely need the LSTMs anymore. To learn more, check out [[Transformer]].
