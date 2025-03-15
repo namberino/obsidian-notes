@@ -75,3 +75,5 @@ Note that the weights used to calculate the query, key, value sets for Encoder-D
 Finally, we top the encoder-decoder attention off with a set of residual connections. Now, we just feed the output of this encoder-decoder attention layer into a fully-connected layer with 1 input for each value that represents the current token and 1 output for each token in the vocabulary.
 
 The decoder doesn't stop until it outputs an `<EOS>` token. So we continue the decoding for the word "vamos". Note that the self-attention is now calculated between `<EOS>` and "vamos".
+
+There are other types of transformer: Encoder-only, which is good for sequence clustering and classification (BERT), and Decoder-only, which is good for text generation.
