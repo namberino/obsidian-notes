@@ -1,6 +1,6 @@
 # Word Embedding
 
-![](./Assets/word-embedding-diagram.png)
+![](word-embedding-diagram.png)
 
 Word embedding allows us to turn words into numbers.
 
@@ -19,11 +19,11 @@ The weights will be optimized by backpropagation. To do backpropagation, we need
 
 To make these predictions, we connect the activation functions to sum nodes with weights on each connections and run the sum nodes through Softmax, so we can use cross entropy.
 
-![](./Assets/word-embedding-with-nums-diagram.png)
+![](word-embedding-with-nums-diagram.png)
 
 We can plot the word embeddings out on a plot.
 
-![](./Assets/word-embedding-word-similarity-plot.png)
+![](word-embedding-word-similarity-plot.png)
 
 As we can see, "Troll 2" is not very similar to "Gymkata", which is not what we want. We want the backpropagation to make these 2 words more similar to each other.
 
@@ -51,4 +51,4 @@ The dataset for training is also very large. They can even use everything on Wik
 
 A way to speed up Word2Vec is to use *negative sampling*. This works by randomly selecting a subset of words we want the model predict. For example, we can just pick 1 word input, say "aardvark" and we want to predict the word "a", and let all other word inputs be 0. This removes a lot of weights to optimize. Let's imagine Word2Vec randomly selects the word "abandon" and "a" to predict (in practice, it would select between 2-20 words to predict). So all other outputs will be dropped and the model will only make a prediction with these 2 outputs.
 
-![](./Assets/word2vec-negative-sampling.png)
+![](word2vec-negative-sampling.png)

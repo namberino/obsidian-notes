@@ -4,7 +4,7 @@
 
 As an example, let's build a neural network that can predict stock prices. Stock prices tends to change over time. The longer a company has been on the stock market, the more data we have for that company's stock price. If we want a neural network that can predict stock prices, then we need a neural network that works for different amounts of sequential data.
 
-![](./Assets/rnn-stock-price-example-graph.png)
+![](rnn-stock-price-example-graph.png)
 
 The MLP or CNN can only take in a fixed-size input. We need something that can make a prediction using inputs with different sizes. This is where the Recurrent Neural Network (RNN) comes in.
 
@@ -12,7 +12,7 @@ The MLP or CNN can only take in a fixed-size input. We need something that can m
 
 The RNN is similar to other NN, it has weights, biases, layers, and activation functions. The big difference is that RNN has feedback loops. 
 
-![](./Assets/rnn-1-input-feedback-diagram.png)
+![](rnn-1-input-feedback-diagram.png)
 
 Although the above RNN diagram looks like it only takes in 1 value, the feedback loop makes it so that this RNN can use sequential input values to make predictions.
 
@@ -24,7 +24,7 @@ We're not really interested in the today's stock price because we already have t
 
 To visualize this better, we can unroll the feedback loop into 2 different NNs:
 
-![](./Assets/stock-price-1-input-rnn-unrolled.png)
+![](stock-price-1-input-rnn-unrolled.png)
 
 If we have more data points, we just keep unrolling the input for each data points. Then we plug the values of the input from the oldest to the newest. Even though we keep unrolling the RNN, the weights and biases are shared across every input.
 

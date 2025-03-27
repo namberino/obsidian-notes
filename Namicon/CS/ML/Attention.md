@@ -4,7 +4,7 @@ The problem with the [[Encoder-Decoder Neural Network]] model is that unrolling 
 
 Even when we have 2 separate paths for long-term memory and short-term memory, for long sequences with lots of information, it's easy for information to be lost.
 
-![](./Assets/attention-diagram.png)
+![](attention-diagram.png)
 
 # Attention
 

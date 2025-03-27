@@ -6,7 +6,7 @@ RNNs are hard to train because gradients can explode or vanish. LSTM is a type o
 
 Going with the same stock price prediction example as the [[Recurrent Neural Network]] note, the main idea of LSTM is that instead of using the feedback loop connection like RNN which eventually build up to make a prediction on the stock price, LSTM uses 2 separate paths to make a prediction on the stock price: 1 path for long term memory (green paths), 1 path for short term memory (blue paths).
 
-![](./Assets/lstm-stock-price-example-long-short-mem-paths.png)
+![](lstm-stock-price-example-long-short-mem-paths.png)
 
 # The Long Short-Term Memory neural network
 
@@ -24,7 +24,7 @@ $$
 
 This is a diagram for a simple LSTM model:
 
-![](./Assets/lstm-model-diagram.png)
+![](lstm-model-diagram.png)
 
 The green line running on the top is called the cell state and it represents the long-term memory. There's no weights and biases for this line. It can be modified by several factors like $x$ and $\text{sum}$. This lack of weights allows the long-term memory to flow through a series of unrolled units without causing the gradients to explode or vanish.
 

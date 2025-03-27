@@ -6,7 +6,7 @@ A way to solve this problem is with an encoder-decoder neural network. It's also
 
 # Encoder-Decoder Model
 
-![](./Assets/encoder-decoder-diagram-english-to-spanish.png)
+![](encoder-decoder-diagram-english-to-spanish.png)
 
 Example: Translating English to Spanish
 
